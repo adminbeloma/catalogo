@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catálogo — Playeras Beloma</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap');
+
+:root {
+  --verde:#6AAB1F; --magenta:#D4117A; --dark:#1A1A1A;
+  --bg:#F8F8F6; --card:#fff; --border:#E8E8E4;
+  --text:#1A1A1A; --soft:#6B6B6B;
+  --ws:#25D366;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* HEADER */
+.header{background:var(--dark);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.header-logo{height:40px;object-fit:contain;}
+.header-title{font-family:'DM Serif Display',serif;color:#fff;font-size:18px;}
+.carrito-btn{background:var(--magenta);color:#fff;border:none;border-radius:20px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;position:relative;}
+.carrito-badge{background:#fff;color:var(--magenta);border-radius:50%;width:18px;height:18px;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,var(--dark) 0%,#2D1A2E 100%);padding:32px 20px;text-align:center;color:#fff;}
+.hero h1{font-family:'DM Serif Display',serif;font-size:28px;margin-bottom:8px;}
+.hero p{font-size:14px;color:rgba(255,255,255,0.6);margin-bottom:20px;}
+
+/* BÚSQUEDA */
+.search-bar{max-width:500px;margin:0 auto;display:flex;gap:8px;}
+.search-bar input{flex:1;border:none;border-radius:25px;padding:12px 18px;font-size:14px;outline:none;font-family:'Inter',sans-serif;}
+.search-bar button{background:var(--verde);color:#fff;border:none;border-radius:25px;padding:12px 20px;font-size:14px;font-weight:600;cursor:pointer;}
+
+/* CATEGORÍAS */
+.categorias-wrap{background:#fff;border-bottom:1px solid var(--border);padding:12px 20px;overflow-x:auto;white-space:nowrap;}
+.cat-btn{display:inline-block;padding:7px 16px;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;border:1.5px solid var(--border);color:var(--soft);margin-right:6px;background:#fff;transition:all 0.15s;font-family:'Inter',sans-serif;}
+.cat-btn.active{background:var(--dark);color:#fff;border-color:var(--dark);}
+.cat-btn:hover{border-color:var(--verde);color:var(--verde);}
+
+/* GRID */
+.content{padding:20px;}
+.seccion-titulo{font-family:'DM Serif Display',serif;font-size:20px;margin-bottom:14px;color:var(--dark);}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px;margin-bottom:28px;}
+
+/* CARD DISEÑO */
+.diseno-card{background:var(--card);border-radius:14px;border:1px solid var(--border);overflow:hidden;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s;}
+.diseno-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.1);}
+.diseno-img{width:100%;aspect-ratio:1;object-fit:cover;background:var(--bg);}
+.diseno-img-placeholder{width:100%;aspect-ratio:1;background:linear-gradient(135deg,#f0f0ec,#e8e8e4);display:flex;align-items:center;justify-content:center;font-size:40px;}
+.diseno-info{padding:10px 12px;}
+.diseno-nombre{font-weight:600;font-size:13px;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.diseno-cat{font-size:11px;color:var(--soft);}
+.diseno-precio{font-size:13px;font-weight:700;color:var(--verde);margin-top:4px;}
+.diseno-agotado{font-size:11px;color:#C0392B;font-weight:600;}
+
+/* EMPTY */
+.empty{text-align:center;padding:60px 20px;color:var(--soft);}
+.empty .icon{font-size:48px;margin-bottom:12px;}
+
+/* MODAL DETALLE */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:500;align-items:flex-end;justify-content:center;padding:0;}
+.modal-overlay.open{display:flex;}
+.modal{background:#fff;border-radius:24px 24px 0 0;width:100%;max-width:560px;max-height:92vh;overflow-y:auto;}
+.modal-img{width:100%;aspect-ratio:1;object-fit:cover;}
+.modal-img-placeholder{width:100%;aspect-ratio:1;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:80px;}
+.modal-body{padding:20px;}
+.modal-nombre{font-family:'DM Serif Display',serif;font-size:22px;margin-bottom:4px;}
+.modal-cat{font-size:13px;color:var(--soft);margin-bottom:16px;}
+.modal-precio{font-size:24px;font-weight:700;color:var(--verde);margin-bottom:16px;}
+
+.opcion-label{font-size:12px;font-weight:700;color:var(--soft);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;}
+.opciones-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;}
+.opcion-btn{padding:7px 14px;border-radius:8px;border:1.5px solid var(--border);font-size:13px;font-weight:500;cursor:pointer;background:#fff;font-family:'Inter',sans-serif;transition:all 0.12s;}
+.opcion-btn.active{background:var(--dark);color:#fff;border-color:var(--dark);}
+.opcion-btn:hover:not(.active){border-color:var(--verde);}
+
+.cantidad-row{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+.cant-btn{width:36px;height:36px;border-radius:50%;border:1.5px solid var(--border);background:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;}
+.cant-num{font-size:18px;font-weight:700;min-width:30px;text-align:center;}
+
+.btn-agregar{width:100%;background:var(--verde);color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;margin-bottom:10px;}
+.btn-cerrar-modal{width:100%;background:transparent;color:var(--soft);border:1.5px solid var(--border);border-radius:12px;padding:12px;font-size:14px;cursor:pointer;font-family:'Inter',sans-serif;}
+
+/* CARRITO MODAL */
+.carrito-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:600;align-items:flex-end;justify-content:center;}
+.carrito-overlay.open{display:flex;}
+.carrito-panel{background:#fff;border-radius:24px 24px 0 0;width:100%;max-width:560px;max-height:85vh;overflow-y:auto;padding:20px;}
+.carrito-titulo{font-family:'DM Serif Display',serif;font-size:20px;margin-bottom:16px;}
+.carrito-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
+.carrito-item img,.carrito-item-placeholder{width:60px;height:60px;border-radius:8px;object-fit:cover;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
+.carrito-item-info{flex:1;}
+.carrito-item-nombre{font-weight:600;font-size:14px;}
+.carrito-item-det{font-size:12px;color:var(--soft);margin-top:2px;}
+.carrito-item-precio{font-weight:700;color:var(--verde);font-size:14px;margin-top:4px;}
+.carrito-item-del{background:none;border:none;color:#C0392B;cursor:pointer;font-size:18px;padding:4px;}
+.carrito-total{display:flex;justify-content:space-between;padding:14px 0;font-size:16px;font-weight:700;}
+.btn-ws{width:100%;background:var(--ws);color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-vaciar{width:100%;background:transparent;color:var(--soft);border:1.5px solid var(--border);border-radius:12px;padding:12px;font-size:14px;cursor:pointer;font-family:'Inter',sans-serif;margin-top:8px;}
+
+/* LOADING */
+#loading{position:fixed;inset:0;background:var(--dark);z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
+#loading p{color:#fff;font-size:14px;}
+.spinner{width:40px;height:40px;border:4px solid rgba(106,171,31,0.3);border-top-color:var(--verde);border-radius:50%;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* LINK COMPARTIDO */
+.link-compartido-bar{background:var(--verde);color:#fff;padding:10px 20px;text-align:center;font-size:13px;font-weight:500;}
+
+@media(min-width:600px){
+  .modal-overlay,.carrito-overlay{align-items:center;padding:20px;}
+  .modal,.carrito-panel{border-radius:20px;max-height:90vh;}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr));}
+}
+</style>
+</head>
+<body>
+
+<div id="loading">
+  <div class="spinner"></div>
+  <p>Cargando catálogo...</p>
+</div>
+
+<div id="link-bar" style="display:none;" class="link-compartido-bar"></div>
+
+<div class="header">
+  <div style="font-family:'DM Serif Display',serif;color:#fff;font-size:16px;">Playeras Beloma</div>
+  <button class="carrito-btn" onclick="abrirCarrito()">
+    🛒 Mi pedido <span class="carrito-badge" id="carrito-count">0</span>
+  </button>
+</div>
+
+<div class="hero">
+  <h1>Catálogo de Diseños</h1>
+  <p>Elige tu diseño favorito y arma tu pedido</p>
+  <div class="search-bar">
+    <input type="text" id="search-input" placeholder="Buscar diseño..." oninput="filtrarDiseños()">
+    <button onclick="filtrarDiseños()">Buscar</button>
+  </div>
+</div>
+
+<div class="categorias-wrap" id="categorias-wrap">
+  <button class="cat-btn active" onclick="filtrarCategoria('',this)">Todos</button>
+</div>
+
+<div class="content">
+  <div id="catalogo-grid"></div>
+  <div id="catalogo-empty" class="empty" style="display:none;">
+    <div class="icon">👕</div>
+    <p>No se encontraron diseños.</p>
+  </div>
+</div>
+
+<!-- MODAL DETALLE -->
+<div class="modal-overlay" id="modal-detalle">
+  <div class="modal">
+    <div id="modal-detalle-img"></div>
+    <div class="modal-body">
+      <div class="modal-nombre" id="md-nombre"></div>
+      <div class="modal-cat" id="md-cat"></div>
+      <div class="modal-precio" id="md-precio"></div>
+
+      <div class="opcion-label">Color de playera</div>
+      <div class="opciones-row" id="md-colores"></div>
+
+      <div class="opcion-label">Género</div>
+      <div class="opciones-row" id="md-generos"></div>
+
+      <div class="opcion-label">Talla</div>
+      <div class="opciones-row" id="md-tallas"></div>
+
+      <div class="opcion-label">Cantidad</div>
+      <div class="cantidad-row">
+        <button class="cant-btn" onclick="cambiarCant(-1)">−</button>
+        <span class="cant-num" id="md-cantidad">1</span>
+        <button class="cant-btn" onclick="cambiarCant(1)">+</button>
+      </div>
+
+      <button class="btn-agregar" onclick="agregarAlCarrito()">🛒 Agregar al pedido</button>
+      <button class="btn-cerrar-modal" onclick="closeModal('modal-detalle')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- CARRITO -->
+<div class="carrito-overlay" id="carrito-overlay">
+  <div class="carrito-panel">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <div class="carrito-titulo">Mi pedido</div>
+      <button onclick="closeModal('carrito-overlay')" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--soft);">×</button>
+    </div>
+    <div id="carrito-items"></div>
+    <div id="carrito-empty" style="text-align:center;padding:30px;color:var(--soft);font-size:14px;">Tu pedido está vacío.</div>
+    <div id="carrito-footer" style="display:none;">
+      <div class="carrito-total"><span>Total estimado</span><span id="carrito-total-val">$0</span></div>
+      <button class="btn-ws" onclick="enviarPedidoWs()">
+        💬 Enviar pedido por WhatsApp
+      </button>
+      <button class="btn-vaciar" onclick="vaciarCarrito()">Vaciar pedido</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAvhG8RuytIv9rjsILWF8twyZeqTwfJ10I",
+  authDomain: "adminbeloma.firebaseapp.com",
+  projectId: "adminbeloma",
+  storageBucket: "adminbeloma.firebasestorage.app",
+  messagingSenderId: "542305826307",
+  appId: "1:542305826307:web:4d97b65719bf534eff0036"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const WS_NUMERO = '526691549680'; // Tu WhatsApp
+const TALLAS_POR_GENERO = {
+  'Hombre': ['CH','M','L','XL','XXL','3XL'],
+  'Mujer': ['CH','M','L','XL','XXL'],
+  'Juvenil': ['CH','MED','GDE','XL'],
+  'Niño': ['CH','MED','GDE','XL'],
+  'Bebé Playera': ['Talla 1','Talla 2','Talla 3'],
+  'Pañalero': ['3 meses','6 meses','9 meses','12 meses','18 meses','24 meses']
+};
+
+let diseños = [];
+let categorias = [];
+let categoriaActual = '';
+let diseñoActual = null;
+let cantidadActual = 1;
+let colorActual = '';
+let generoActual = '';
+let tallaActual = '';
+let carrito = [];
+
+// Leer parámetros de URL para links compartidos
+const urlParams = new URLSearchParams(window.location.search);
+const categoriaFiltro = urlParams.get('cat') || '';
+const coleccionFiltro = urlParams.get('col') || '';
+
+async function cargarDiseños() {
+  try {
+    let q;
+    if(categoriaFiltro) {
+      q = query(collection(db,'bl_diseños'), where('activo','==',true), where('categoria','==',categoriaFiltro));
+      document.getElementById('link-bar').style.display = 'block';
+      document.getElementById('link-bar').textContent = `📂 Catálogo de: ${categoriaFiltro}`;
+    } else if(coleccionFiltro) {
+      q = query(collection(db,'bl_diseños'), where('activo','==',true), where('coleccion','==',coleccionFiltro));
+      document.getElementById('link-bar').style.display = 'block';
+      document.getElementById('link-bar').textContent = `📂 Colección: ${coleccionFiltro}`;
+    } else {
+      q = query(collection(db,'bl_diseños'), where('activo','==',true));
+    }
+    const snap = await getDocs(q);
+    diseños = snap.docs.map(d=>d.data());
+    
+    // Extraer categorías únicas
+    categorias = [...new Set(diseños.map(d=>d.categoria).filter(Boolean))].sort();
+    renderCategorias();
+    
+    if(categoriaFiltro) categoriaActual = categoriaFiltro;
+    renderDiseños();
+    document.getElementById('loading').style.display = 'none';
+  } catch(e) {
+    console.error(e);
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('catalogo-empty').style.display = 'block';
+  }
+}
+
+function renderCategorias() {
+  const wrap = document.getElementById('categorias-wrap');
+  wrap.innerHTML = `<button class="cat-btn ${!categoriaActual?'active':''}" onclick="filtrarCategoria('',this)">Todos</button>`;
+  categorias.forEach(cat => {
+    wrap.innerHTML += `<button class="cat-btn ${categoriaActual===cat?'active':''}" onclick="filtrarCategoria('${cat}',this)">${cat}</button>`;
+  });
+}
+
+window.filtrarCategoria = function(cat, btn) {
+  categoriaActual = cat;
+  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderDiseños();
+};
+
+window.filtrarDiseños = function() {
+  renderDiseños();
+};
+
+function renderDiseños() {
+  const search = document.getElementById('search-input').value.toLowerCase();
+  let lista = diseños.filter(d => {
+    const mc = !categoriaActual || d.categoria === categoriaActual;
+    const ms = !search || d.nombre?.toLowerCase().includes(search) || d.categoria?.toLowerCase().includes(search) || (d.tags||'').toLowerCase().includes(search);
+    return mc && ms;
+  });
+
+  const grid = document.getElementById('catalogo-grid');
+  const empty = document.getElementById('catalogo-empty');
+
+  if(lista.length === 0) { grid.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display='none';
+
+  // Agrupar por categoría si estamos viendo todos
+  if(!categoriaActual && !search) {
+    let html = '';
+    const cats = [...new Set(lista.map(d=>d.categoria))].sort();
+    cats.forEach(cat => {
+      const items = lista.filter(d=>d.categoria===cat);
+      html += `<div style="margin-bottom:24px;">
+        <div style="font-family:'DM Serif Display',serif;font-size:18px;margin-bottom:12px;color:var(--dark);border-bottom:2px solid var(--verde);padding-bottom:6px;">${cat}</div>
+        <div class="grid">${items.map(d=>cardHtml(d)).join('')}</div>
+      </div>`;
+    });
+    // Sin categoría
+    const sinCat = lista.filter(d=>!d.categoria);
+    if(sinCat.length>0) html += `<div class="grid">${sinCat.map(d=>cardHtml(d)).join('')}</div>`;
+    grid.innerHTML = html;
+  } else {
+    grid.innerHTML = `<div class="grid">${lista.map(d=>cardHtml(d)).join('')}</div>`;
+  }
+}
+
+function cardHtml(d) {
+  const agotado = d.stock !== undefined && d.stock <= 0;
+  return `<div class="diseno-card" onclick="${agotado?'':''}" ${agotado?'style="opacity:0.6;"':''}>
+    <div onclick="${agotado?'':''}" style="cursor:${agotado?'not-allowed':'pointer'}" onclick="verDiseño('${d.id}')">
+      ${d.imagen ? `<img class="diseno-img" src="${d.imagen}" alt="${d.nombre}" loading="lazy" onclick="verDiseño('${d.id}')">` : `<div class="diseno-img-placeholder" onclick="verDiseño('${d.id}')">👕</div>`}
+    </div>
+    <div class="diseno-info">
+      <div class="diseno-nombre">${d.nombre}</div>
+      <div class="diseno-cat">${d.categoria||'—'}</div>
+      ${d.precio?`<div class="diseno-precio">$${Number(d.precio).toLocaleString('es-MX')}</div>`:''}
+      ${agotado?`<div class="diseno-agotado">Agotado</div>`:''}
+      ${!agotado?`<button onclick="verDiseño('${d.id}')" style="width:100%;margin-top:8px;background:var(--verde);color:#fff;border:none;border-radius:8px;padding:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;">Pedir este 👕</button>`:''}
+    </div>
+  </div>`;
+}
+
+window.verDiseño = function(id) {
+  const d = diseños.find(x=>x.id===id);
+  if(!d) return;
+  diseñoActual = d;
+  cantidadActual = 1;
+  colorActual = '';
+  generoActual = '';
+  tallaActual = '';
+
+  document.getElementById('md-nombre').textContent = d.nombre;
+  document.getElementById('md-cat').textContent = d.categoria || '';
+  document.getElementById('md-precio').textContent = d.precio ? '$'+Number(d.precio).toLocaleString('es-MX') : '';
+  document.getElementById('md-cantidad').textContent = 1;
+
+  // Imagen
+  const imgEl = document.getElementById('modal-detalle-img');
+  imgEl.innerHTML = d.imagen ? `<img class="modal-img" src="${d.imagen}" alt="${d.nombre}">` : `<div class="modal-img-placeholder">👕</div>`;
+
+  // Colores
+  const colores = ['Blanca','Negra','Color claro','Color oscuro'];
+  document.getElementById('md-colores').innerHTML = colores.map(c=>
+    `<button class="opcion-btn" onclick="selColor('${c}',this)">${c}</button>`
+  ).join('');
+
+  // Géneros
+  const generos = Object.keys(TALLAS_POR_GENERO);
+  document.getElementById('md-generos').innerHTML = generos.map(g=>
+    `<button class="opcion-btn" onclick="selGenero('${g}',this)">${g}</button>`
+  ).join('');
+
+  document.getElementById('md-tallas').innerHTML = '<span style="font-size:13px;color:var(--soft);">Selecciona un género primero</span>';
+
+  openModal('modal-detalle');
+};
+
+window.selColor = function(c, btn) {
+  colorActual = c;
+  document.querySelectorAll('#md-colores .opcion-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+};
+
+window.selGenero = function(g, btn) {
+  generoActual = g;
+  tallaActual = '';
+  document.querySelectorAll('#md-generos .opcion-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const tallas = TALLAS_POR_GENERO[g] || [];
+  document.getElementById('md-tallas').innerHTML = tallas.map(t=>
+    `<button class="opcion-btn" onclick="selTalla('${t}',this)">${t}</button>`
+  ).join('');
+};
+
+window.selTalla = function(t, btn) {
+  tallaActual = t;
+  document.querySelectorAll('#md-tallas .opcion-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+};
+
+window.cambiarCant = function(delta) {
+  cantidadActual = Math.max(1, cantidadActual + delta);
+  document.getElementById('md-cantidad').textContent = cantidadActual;
+};
+
+window.agregarAlCarrito = function() {
+  if(!colorActual) { alert('Selecciona el color de playera'); return; }
+  if(!generoActual) { alert('Selecciona el género'); return; }
+  if(!tallaActual) { alert('Selecciona la talla'); return; }
+  
+  const item = {
+    id: diseñoActual.id,
+    nombre: diseñoActual.nombre,
+    imagen: diseñoActual.imagen || '',
+    categoria: diseñoActual.categoria,
+    precio: diseñoActual.precio || 0,
+    color: colorActual,
+    genero: generoActual,
+    talla: tallaActual,
+    cantidad: cantidadActual,
+    uid: Date.now().toString()
+  };
+  carrito.push(item);
+  actualizarCarritoBadge();
+  closeModal('modal-detalle');
+  
+  // Mostrar confirmación
+  const toast = document.createElement('div');
+  toast.textContent = '✅ Agregado al pedido';
+  toast.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1A1A1A;color:#fff;padding:10px 20px;border-radius:20px;font-size:14px;z-index:9999;font-family:Inter,sans-serif;';
+  document.body.appendChild(toast);
+  setTimeout(()=>toast.remove(), 2000);
+};
+
+function actualizarCarritoBadge() {
+  const total = carrito.reduce((s,i)=>s+i.cantidad, 0);
+  document.getElementById('carrito-count').textContent = total;
+}
+
+window.abrirCarrito = function() {
+  const itemsEl = document.getElementById('carrito-items');
+  const emptyEl = document.getElementById('carrito-empty');
+  const footerEl = document.getElementById('carrito-footer');
+  
+  if(carrito.length === 0) {
+    itemsEl.innerHTML = '';
+    emptyEl.style.display = 'block';
+    footerEl.style.display = 'none';
+  } else {
+    emptyEl.style.display = 'none';
+    footerEl.style.display = 'block';
+    let total = 0;
+    itemsEl.innerHTML = carrito.map(item => {
+      total += (item.precio || 0) * item.cantidad;
+      return `<div class="carrito-item">
+        ${item.imagen ? `<img src="${item.imagen}" alt="${item.nombre}" style="width:60px;height:60px;border-radius:8px;object-fit:cover;">` : `<div class="carrito-item-placeholder">👕</div>`}
+        <div class="carrito-item-info">
+          <div class="carrito-item-nombre">${item.nombre}</div>
+          <div class="carrito-item-det">${item.color} · ${item.genero} · Talla ${item.talla} · x${item.cantidad}</div>
+          ${item.precio ? `<div class="carrito-item-precio">$${(item.precio*item.cantidad).toLocaleString('es-MX')}</div>` : ''}
+        </div>
+        <button class="carrito-item-del" onclick="eliminarItem('${item.uid}')">🗑</button>
+      </div>`;
+    }).join('');
+    document.getElementById('carrito-total-val').textContent = total > 0 ? '$'+total.toLocaleString('es-MX') : 'A cotizar';
+  }
+  openModal('carrito-overlay');
+};
+
+window.eliminarItem = function(uid) {
+  carrito = carrito.filter(i=>i.uid !== uid);
+  actualizarCarritoBadge();
+  abrirCarrito();
+};
+
+window.vaciarCarrito = function() {
+  if(!confirm('¿Vaciar el pedido?')) return;
+  carrito = [];
+  actualizarCarritoBadge();
+  abrirCarrito();
+};
+
+window.enviarPedidoWs = function() {
+  if(carrito.length === 0) return;
+  let msg = `Hola! Quisiera hacer un pedido de Playeras Beloma 👕\n\n`;
+  msg += `*MI PEDIDO:*\n`;
+  carrito.forEach((item,i) => {
+    msg += `\n${i+1}. *${item.nombre}*\n`;
+    msg += `   🎨 Color: ${item.color}\n`;
+    msg += `   👤 Género: ${item.genero}\n`;
+    msg += `   📏 Talla: ${item.talla}\n`;
+    msg += `   🔢 Cantidad: ${item.cantidad}\n`;
+    if(item.precio) msg += `   💰 Precio unit.: $${Number(item.precio).toLocaleString('es-MX')}\n`;
+  });
+  const total = carrito.reduce((s,i)=>s+(i.precio||0)*i.cantidad,0);
+  if(total > 0) msg += `\n*Total estimado: $${total.toLocaleString('es-MX')}*\n`;
+  msg += `\n¿Pueden confirmarme disponibilidad? ¡Gracias!`;
+  window.open(`https://wa.me/${WS_NUMERO}?text=${encodeURIComponent(msg)}`,'_blank');
+};
+
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+window.closeModal = closeModal;
+
+document.querySelectorAll('.modal-overlay,.carrito-overlay').forEach(o=>{
+  o.addEventListener('click',e=>{ if(e.target===o) o.classList.remove('open'); });
+});
+
+cargarDiseños();
+</script>
+</body>
+</html>
