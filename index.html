@@ -247,15 +247,15 @@ async function cargarDiseños() {
   try {
     let q;
     if(categoriaFiltro) {
-      q = query(collection(db,'bl_diseños'), where('activo','==',true), where('categoria','==',categoriaFiltro));
+      q = query(collection(db,'bl_disenos'), where('activo','==',true), where('categoria','==',categoriaFiltro));
       document.getElementById('link-bar').style.display = 'block';
       document.getElementById('link-bar').textContent = `📂 Catálogo de: ${categoriaFiltro}`;
     } else if(coleccionFiltro) {
-      q = query(collection(db,'bl_diseños'), where('activo','==',true), where('coleccion','==',coleccionFiltro));
+      q = query(collection(db,'bl_disenos'), where('activo','==',true), where('coleccion','==',coleccionFiltro));
       document.getElementById('link-bar').style.display = 'block';
       document.getElementById('link-bar').textContent = `📂 Colección: ${coleccionFiltro}`;
     } else {
-      q = query(collection(db,'bl_diseños'), where('activo','==',true));
+      q = query(collection(db,'bl_disenos'), where('activo','==',true));
     }
     const snap = await getDocs(q);
     diseños = snap.docs.map(d=>d.data());
