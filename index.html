@@ -219,6 +219,11 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 const WS_NUMERO = '526691549680'; // Tu WhatsApp
+
+function optimizarImg(url, ancho=300) {
+  if(!url || !url.includes('cloudinary.com')) return url;
+  return url.replace('/upload/', `/upload/w_${ancho},q_auto,f_auto/`);
+}
 const TALLAS_POR_GENERO = {
   'Hombre': ['CH','M','L','XL','XXL','3XL'],
   'Mujer': ['CH','M','L','XL','XXL'],
@@ -331,7 +336,7 @@ function cardHtml(d) {
   const agotado = d.stock !== undefined && d.stock <= 0;
   return `<div class="diseno-card" onclick="${agotado?'':''}" ${agotado?'style="opacity:0.6;"':''}>
     <div onclick="${agotado?'':''}" style="cursor:${agotado?'not-allowed':'pointer'}" onclick="verDiseño('${d.id}')">
-      ${d.imagen ? `<img class="diseno-img" src="${d.imagen}" alt="${d.nombre}" loading="lazy" onclick="verDiseño('${d.id}')">` : `<div class="diseno-img-placeholder" onclick="verDiseño('${d.id}')">👕</div>`}
+      ${d.imagen ? `<img class="diseno-img" src="${optimizarImg(d.imagen,400)}" alt="${d.nombre}" loading="lazy" onclick="verDiseño('${d.id}')">` : `<div class="diseno-img-placeholder" onclick="verDiseño('${d.id}')">👕</div>`}
     </div>
     <div class="diseno-info">
       <div class="diseno-nombre">${d.nombre}</div>
@@ -359,7 +364,7 @@ window.verDiseño = function(id) {
 
   // Imagen
   const imgEl = document.getElementById('modal-detalle-img');
-  imgEl.innerHTML = d.imagen ? `<img class="modal-img" src="${d.imagen}" alt="${d.nombre}">` : `<div class="modal-img-placeholder">👕</div>`;
+  imgEl.innerHTML = d.imagen ? `<img class="modal-img" src="${optimizarImg(d.imagen,800)}" alt="${d.nombre}">` : `<div class="modal-img-placeholder">👕</div>`;
 
   // Colores
   const colores = ['Blanca','Negra','Color claro','Color oscuro'];
