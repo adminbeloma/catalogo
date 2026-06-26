@@ -366,19 +366,40 @@ window.verDiseño = function(id) {
   const imgEl = document.getElementById('modal-detalle-img');
   imgEl.innerHTML = d.imagen ? `<img class="modal-img" src="${optimizarImg(d.imagen,800)}" alt="${d.nombre}">` : `<div class="modal-img-placeholder">👕</div>`;
 
-  // Colores
-  const colores = ['Blanca','Negra','Color claro','Color oscuro'];
-  document.getElementById('md-colores').innerHTML = colores.map(c=>
-    `<button class="opcion-btn" onclick="selColor('${c}',this)">${c}</button>`
-  ).join('');
+  // Color — si el diseño tiene color predefinido, mostrarlo fijo
+  if(d.color) {
+    colorActual = d.color;
+    document.getElementById('md-colores').innerHTML = `
+      <div style="background:var(--bg);border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600;">
+        🎨 ${d.color} <span style="font-size:11px;color:var(--soft);font-weight:400;">(definido por el diseño)</span>
+      </div>`;
+  } else {
+    colorActual = '';
+    const colores = ['Blanca','Negra','Color claro','Color oscuro'];
+    document.getElementById('md-colores').innerHTML = colores.map(c=>
+      `<button class="opcion-btn" onclick="selColor('${c}',this)">${c}</button>`
+    ).join('');
+  }
 
-  // Géneros
-  const generos = Object.keys(TALLAS_POR_GENERO);
-  document.getElementById('md-generos').innerHTML = generos.map(g=>
-    `<button class="opcion-btn" onclick="selGenero('${g}',this)">${g}</button>`
-  ).join('');
-
-  document.getElementById('md-tallas').innerHTML = '<span style="font-size:13px;color:var(--soft);">Selecciona un género primero</span>';
+  // Género — si el diseño tiene género predefinido, mostrarlo fijo y cargar tallas
+  if(d.genero) {
+    generoActual = d.genero;
+    document.getElementById('md-generos').innerHTML = `
+      <div style="background:var(--bg);border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600;">
+        👤 ${d.genero} <span style="font-size:11px;color:var(--soft);font-weight:400;">(definido por el diseño)</span>
+      </div>`;
+    const tallas = TALLAS_POR_GENERO[d.genero] || [];
+    document.getElementById('md-tallas').innerHTML = tallas.map(t=>
+      `<button class="opcion-btn" onclick="selTalla('${t}',this)">${t}</button>`
+    ).join('');
+  } else {
+    generoActual = '';
+    const generos = Object.keys(TALLAS_POR_GENERO);
+    document.getElementById('md-generos').innerHTML = generos.map(g=>
+      `<button class="opcion-btn" onclick="selGenero('${g}',this)">${g}</button>`
+    ).join('');
+    document.getElementById('md-tallas').innerHTML = '<span style="font-size:13px;color:var(--soft);">Selecciona un género primero</span>';
+  }
 
   openModal('modal-detalle');
 };
