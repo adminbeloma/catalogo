@@ -214,6 +214,7 @@ window.selCat = async function(btn) {
   btn.classList.add('active');
   const cat = btn.dataset.cat;
   carpetaId = null;
+  historial = [];
   setBreadcrumb('');
 
   if(!cat) {
@@ -235,9 +236,13 @@ window.selCat = async function(btn) {
   }
 };
 
-async function mostrarContenido(folderId, breadcrumb) {
+// Historial para volver
+let historial = [];
+
+async function mostrarContenido(folderId, breadcrumb, esRaizCat = false) {
   setEstado('⏳ Cargando...');
   carpetaId = folderId;
+  setBreadcrumb(breadcrumb, esRaizCat);
 
   // Ver subcarpetas
   const data = await api({ action:'list', parentId: folderId, type:'folders' });
@@ -247,7 +252,7 @@ async function mostrarContenido(folderId, breadcrumb) {
     ocultarEstado();
     renderCarpetas(subs, folderId, breadcrumb, data.nextPageToken);
   } else {
-    // No hay subcarpetas, mostrar imágenes
+    // No hay subcarpetas — mostrar imágenes
     await mostrarImgs(folderId, null);
   }
 }
@@ -288,8 +293,24 @@ function renderBtnMasCarpetas(parentId, breadcrumb, token) {
 }
 
 window.entrarCarpeta = async function(folderId, breadcrumb) {
-  setBreadcrumb(breadcrumb);
+  // Guardar estado anterior en historial
+  historial.push({ folderId: carpetaId, breadcrumb: document.getElementById('breadcrumb').dataset.texto || '' });
+  setBreadcrumb(breadcrumb, false);
   await mostrarContenido(folderId, breadcrumb);
+};
+
+window.volverAtras = async function() {
+  if(!historial.length) return;
+  const prev = historial.pop();
+  if(!prev.folderId) {
+    // Volver a selección inicial
+    setBreadcrumb('');
+    setEstado('Selecciona una categoría para explorar.');
+    carpetaId = null;
+    return;
+  }
+  setBreadcrumb(prev.breadcrumb, false);
+  await mostrarContenido(prev.folderId, prev.breadcrumb);
 };
 
 async function mostrarImgs(folderId, pageToken) {
@@ -376,11 +397,15 @@ window.buscar = async function() {
 };
 
 // ── BREADCRUMB ─────────────────────────────────────────────
-function setBreadcrumb(texto) {
+function setBreadcrumb(texto, esRaiz = false) {
   const el = document.getElementById('breadcrumb');
-  if(!texto) { el.style.display = 'none'; return; }
+  el.dataset.texto = texto;
+  if(!texto) { el.style.display = 'none'; historial = []; return; }
   el.style.display = 'flex';
-  el.innerHTML = `<span style="color:var(--text);font-weight:600;">${texto}</span>`;
+  const botonVolver = !esRaiz && historial.length > 0
+    ? `<button onclick="volverAtras()" style="background:none;border:1.5px solid var(--border);border-radius:20px;padding:4px 12px;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;color:var(--soft);margin-right:4px;">← Volver</button>`
+    : '';
+  el.innerHTML = `${botonVolver}<span style="color:var(--text);font-weight:600;">${texto}</span>`;
 }
 
 // ── UTILIDADES ─────────────────────────────────────────────
