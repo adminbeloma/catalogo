@@ -272,15 +272,7 @@ async function mostrarContenido(folderId, breadcrumb, esRaizCat = false) {
   if(imgs.length > 0) {
     visorImgs = imgs;
     html += `<div class="grid-imgs" id="imgs-inner">${
-      imgs.map((img, i) => `
-        <div class="img-card">
-          <img src="${img.thumbnailLink}" alt="${img.name}" loading="lazy" onerror="this.style.opacity='0'" onclick="abrirVisor(${i})" style="cursor:pointer;">
-          <div class="img-name">${img.name.replace(/\.\w+$/,'')}</div>
-          <button onclick="pedirPlayera('${img.name.replace(/\.\w+$/,'').replace(/'/g,'\\'')}')"
-            style="width:calc(100% - 16px);margin:0 8px 8px;background:var(--verde);color:#fff;
-                   border:none;border-radius:8px;padding:7px;font-size:12px;font-weight:600;
-                   cursor:pointer;font-family:'Inter',sans-serif;">🛒 Pedir esta</button>
-        </div>`).join('')
+      imgs.map((img, i) => imgCard(img, i)).join('')
     }</div>`;
   }
 
@@ -308,13 +300,7 @@ async function mostrarMasImgs(folderId, pageToken) {
   if(inner) inner.innerHTML += imgs.map((img, i) => {
     const idx = visorImgs.length - imgs.length + i;
     return `<div class="img-card">
-      <img src="${img.thumbnailLink}" alt="${img.name}" loading="lazy" onerror="this.style.opacity='0'" onclick="abrirVisor(${idx})" style="cursor:pointer;">
-      <div class="img-name">${img.name.replace(/\.\w+$/,'')}</div>
-      <button onclick="pedirPlayera('${img.name.replace(/\.\w+$/,'').replace(/'/g,'\\'')}')"
-        style="width:calc(100% - 16px);margin:0 8px 8px;background:var(--verde);color:#fff;
-               border:none;border-radius:8px;padding:7px;font-size:12px;font-weight:600;
-               cursor:pointer;font-family:'Inter',sans-serif;">🛒 Pedir esta</button>
-    </div>`;
+      return imgCard(img, idx);
   }).join('');
   const pag = document.getElementById('pag');
   pag.innerHTML = '';
@@ -400,13 +386,7 @@ async function mostrarImgs(folderId, pageToken) {
   const cards = imgs.map((img, i) => {
     const idx = visorImgs.length - imgs.length + i;
     return `<div class="img-card">
-      <img src="${img.thumbnailLink}" alt="${img.name}" loading="lazy" onerror="this.style.opacity='0'" onclick="abrirVisor(${idx})" style="cursor:pointer;">
-      <div class="img-name">${img.name.replace(/\.\w+$/,'')}</div>
-      <button onclick="pedirPlayera('${img.name.replace(/\.\w+$/,'').replace(/'/g,'\\'')}')"
-        style="width:calc(100% - 16px);margin:0 8px 8px;background:var(--verde);color:#fff;
-               border:none;border-radius:8px;padding:7px;font-size:12px;font-weight:600;
-               cursor:pointer;font-family:'Inter',sans-serif;">🛒 Pedir esta</button>
-    </div>`;
+      return imgCard(img, idx);
   }).join('');
 
   if(pageToken) {
@@ -428,6 +408,29 @@ async function mostrarImgs(folderId, pageToken) {
 }
 
 // ── BÚSQUEDA ───────────────────────────────────────────────
+
+function imgCard(img, idx) {
+  const nombre = img.name.replace(/\.\w+$/, '');
+  const div = document.createElement('div');
+  div.className = 'img-card';
+  const im = document.createElement('img');
+  im.src = img.thumbnailLink;
+  im.alt = nombre;
+  im.loading = 'lazy';
+  im.style.cursor = 'pointer';
+  im.onerror = function(){ this.style.opacity='0'; };
+  im.onclick = function(){ abrirVisor(idx); };
+  const dn = document.createElement('div');
+  dn.className = 'img-name';
+  dn.textContent = nombre;
+  const btn = document.createElement('button');
+  btn.textContent = '🛒 Pedir esta';
+  btn.style.cssText = 'width:calc(100% - 16px);margin:0 8px 8px;background:var(--verde);color:#fff;border:none;border-radius:8px;padding:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;';
+  btn.onclick = function(){ pedirPlayera(nombre); };
+  div.appendChild(im); div.appendChild(dn); div.appendChild(btn);
+  return div.outerHTML;
+}
+
 window.buscar = async function() {
   const q = document.getElementById('q-input').value.trim();
   if(!q) return;
