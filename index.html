@@ -365,6 +365,11 @@ window.volverANivel = async function(nivel) {
   await navegarCarpeta(entrada.id, entrada.breadcrumb || entrada.nombre);
 };
 
+// ── NORMALIZACIÓN ──────────────────────────────────────────
+function normalizarTexto(texto) {
+  return texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+}
+
 // ── BÚSQUEDA RECURSIVA EN DRIVE ────────────────────────────
 async function buscarEnDriveRecursivo(q) {
   const variantes = [...new Set([
