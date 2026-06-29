@@ -299,8 +299,7 @@ async function mostrarMasImgs(folderId, pageToken) {
   const inner = document.getElementById('imgs-inner');
   if(inner) inner.innerHTML += imgs.map((img, i) => {
     const idx = visorImgs.length - imgs.length + i;
-    return `<div class="img-card">
-      return imgCard(img, idx);
+    return imgCard(img, idx);
   }).join('');
   const pag = document.getElementById('pag');
   pag.innerHTML = '';
@@ -385,8 +384,7 @@ async function mostrarImgs(folderId, pageToken) {
   const grid = document.getElementById('grid');
   const cards = imgs.map((img, i) => {
     const idx = visorImgs.length - imgs.length + i;
-    return `<div class="img-card">
-      return imgCard(img, idx);
+    return imgCard(img, idx);
   }).join('');
 
   if(pageToken) {
@@ -459,12 +457,9 @@ window.buscar = async function() {
       visorImgs = data.resultado;
       ocultarEstado();
       setBreadcrumb(`Resultados: "${q}"`);
+      visorImgs = data.resultado;
       document.getElementById('grid').innerHTML = `<div class="grid-imgs">${
-        data.resultado.map((img, i) => `
-          <div class="img-card" onclick="abrirVisor(${i})">
-            <img src="${img.thumbnailLink}" alt="${img.name}" loading="lazy" onerror="this.style.opacity='0'">
-            <div class="img-name">${img.name}</div>
-          </div>`).join('')
+        data.resultado.map((img, i) => imgCard(img, i)).join('')
       }</div>`;
     }
   } catch(e) {
