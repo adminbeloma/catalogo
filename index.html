@@ -117,10 +117,10 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
   <button class="nav-btn" onclick="selCategoria('Grupos Musicales',this)">Grupos Musicales</button>
   <button class="nav-btn" onclick="selCategoria('Juguetes & Juegos',this)">Juguetes & Juegos</button>
   <button class="nav-btn" onclick="selCategoria('Libros, Revistas y Cómics',this)">Libros & Cómics</button>
-  <button class="nav-btn" onclick="selCategoria('Películas',this)">Películas</button>
+  <button class="nav-btn" onclick="selCategoria('Peliculas',this)">Películas</button>
   <button class="nav-btn" onclick="selCategoria('Personajes',this)">Personajes</button>
   <button class="nav-btn" onclick="selCategoria('Series',this)">Series</button>
-  <button class="nav-btn" onclick="selCategoria('Superhéroes',this)">Superhéroes</button>
+  <button class="nav-btn" onclick="selCategoria('Superheroes',this)">Superhéroes</button>
   <button class="nav-btn" onclick="selCategoria('Videojuegos',this)">Videojuegos</button>
 </div>
 
@@ -209,19 +209,19 @@ async function driveCall(params) {
 }
 
 async function getDriveSubcarpetas(parentId) {
-  const data = await driveCall({ parentId, type: 'folders' });
+  const data = await driveCall({ action: 'list', parentId, type: 'folders' });
   return data.files || [];
 }
 
 async function getDriveImagenes(folderId, pageToken = null, filtro = '') {
-  const params = { parentId: folderId, type: 'images' };
+  const params = { action: 'list', parentId: folderId, type: 'images' };
   if(filtro) params.q = filtro;
   if(pageToken) params.pageToken = pageToken;
   return driveCall(params);
 }
 
 async function getDriveCarpetaPorNombre(parentId, nombre) {
-  const data = await driveCall({ parentId, type: 'folders', q: nombre });
+  const data = await driveCall({ action: 'list', parentId, type: 'folders', q: nombre });
   return data.files?.[0] || null;
 }
 
@@ -396,35 +396,17 @@ function normalizarTexto(texto) {
 
 // ── BÚSQUEDA RECURSIVA EN DRIVE ────────────────────────────
 async function buscarEnDriveRecursivo(q) {
-  const variantes = [...new Set([
-    q.trim(),
-    normalizarTexto(q),
-    q.trim().charAt(0).toUpperCase() + q.trim().slice(1),
-    normalizarTexto(q).charAt(0).toUpperCase() + normalizarTexto(q).slice(1)
-  ])];
-
-  // 1. Buscar subcarpeta en categorías raíz
-  const cats = await getDriveSubcarpetas(DRIVE_ROOT_ID);
-  for(const cat of cats) {
-    for(const v of variantes) {
-      const data = await driveCall({ parentId: cat.id, type: 'folders', q: v });
-      if(data.files?.length) return { tipo: 'carpeta', carpeta: data.files[0] };
-    }
-  }
-
-  // 2. Buscar también en raíz directamente
-  for(const v of variantes) {
-    const data = await driveCall({ parentId: DRIVE_ROOT_ID, type: 'folders', q: v });
-    if(data.files?.length) return { tipo: 'carpeta', carpeta: data.files[0] };
-  }
-
-  // 3. Buscar archivos en carpeta actual o raíz
   const parentId = carpetaActualId || DRIVE_ROOT_ID;
-  for(const v of variantes) {
-    const data = await driveCall({ parentId, type: 'images', q: v });
-    if(data.files?.length) return { tipo: 'archivos', archivos: data.files };
-  }
+  const data = await driveCall({
+    action: 'search',
+    q,
+    parentId,
+    rootId: DRIVE_ROOT_ID
+  });
 
+  if(!data || data.tipo === 'nada') return null;
+  if(data.tipo === 'carpeta') return { tipo: 'carpeta', carpeta: data.resultado };
+  if(data.tipo === 'archivos') return { tipo: 'archivos', archivos: data.resultado };
   return null;
 }
 
