@@ -244,16 +244,78 @@ async function mostrarContenido(folderId, breadcrumb, esRaizCat = false) {
   carpetaId = folderId;
   setBreadcrumb(breadcrumb, esRaizCat);
 
-  // Ver subcarpetas
-  const data = await api({ action:'list', parentId: folderId, type:'folders' });
-  const subs = data.files || [];
+  // Cargar subcarpetas e imágenes en paralelo
+  const [dataFolders, dataImgs] = await Promise.all([
+    api({ action:'list', parentId: folderId, type:'folders' }),
+    api({ action:'list', parentId: folderId, type:'images' })
+  ]);
 
+  const subs = dataFolders.files || [];
+  const imgs = dataImgs.files || [];
+
+  ocultarEstado();
+
+  if(!subs.length && !imgs.length) {
+    setEstado('Esta carpeta está vacía.');
+    return;
+  }
+
+  const grid = document.getElementById('grid');
+  let html = '';
+
+  // Subcarpetas primero
   if(subs.length > 0) {
-    ocultarEstado();
-    renderCarpetas(subs, folderId, breadcrumb, data.nextPageToken);
-  } else {
-    // No hay subcarpetas — mostrar imágenes
-    await mostrarImgs(folderId, null);
+    html += `<div class="grid-carpetas" id="c-inner">${carpetasHTML(subs, breadcrumb)}</div>`;
+  }
+
+  // Imágenes debajo
+  if(imgs.length > 0) {
+    visorImgs = imgs;
+    html += `<div class="grid-imgs" id="imgs-inner">${
+      imgs.map((img, i) => `
+        <div class="img-card" onclick="abrirVisor(${i})">
+          <img src="${img.thumbnailLink}" alt="${img.name}" loading="lazy" onerror="this.style.opacity='0'">
+          <div class="img-name">${img.name}</div>
+        </div>`).join('')
+    }</div>`;
+  }
+
+  grid.innerHTML = html;
+
+  // Botón ver más carpetas
+  if(dataFolders.nextPageToken) renderBtnMasCarpetas(folderId, breadcrumb, dataFolders.nextPageToken);
+
+  // Botón ver más imágenes
+  if(dataImgs.nextPageToken) {
+    const pag = document.getElementById('pag');
+    const btn = document.createElement('button');
+    btn.className = 'btn-mas';
+    btn.textContent = 'Ver más imágenes →';
+    btn.onclick = () => mostrarMasImgs(folderId, dataImgs.nextPageToken);
+    pag.appendChild(btn);
+  }
+}
+
+async function mostrarMasImgs(folderId, pageToken) {
+  const data = await api({ action:'list', parentId: folderId, type:'images', pageToken });
+  const imgs = data.files || [];
+  visorImgs = visorImgs.concat(imgs);
+  const inner = document.getElementById('imgs-inner');
+  if(inner) inner.innerHTML += imgs.map((img, i) => {
+    const idx = visorImgs.length - imgs.length + i;
+    return `<div class="img-card" onclick="abrirVisor(${idx})">
+      <img src="${img.thumbnailLink}" alt="${img.name}" loading="lazy" onerror="this.style.opacity='0'">
+      <div class="img-name">${img.name}</div>
+    </div>`;
+  }).join('');
+  const pag = document.getElementById('pag');
+  pag.innerHTML = '';
+  if(data.nextPageToken) {
+    const btn = document.createElement('button');
+    btn.className = 'btn-mas';
+    btn.textContent = 'Ver más imágenes →';
+    btn.onclick = () => mostrarMasImgs(folderId, data.nextPageToken);
+    pag.appendChild(btn);
   }
 }
 
@@ -358,38 +420,39 @@ window.buscar = async function() {
   const q = document.getElementById('q-input').value.trim();
   if(!q) return;
 
+  const parentId = carpetaId || ROOT;
   setEstado('⏳ Buscando...');
   visorImgs = [];
   document.getElementById('pag').innerHTML = '';
 
   try {
-    const parentId = carpetaId || ROOT;
-    const data = await api({ action:'search', q, parentId, rootId: ROOT });
-
-    if(!data || data.tipo === 'nada') {
-      setEstado(`No se encontraron resultados para "${q}".`);
+    // 1. Buscar subcarpeta con ese nombre en la carpeta actual
+    const dataFolders = await api({ action:'list', parentId, type:'folders', q });
+    if(dataFolders.files?.length) {
+      const found = dataFolders.files[0];
+      historial.push({ folderId: carpetaId, breadcrumb: document.getElementById('breadcrumb').dataset.texto || '' });
+      await mostrarContenido(found.id, found.name);
       return;
     }
 
-    if(data.tipo === 'carpeta') {
-      const c = data.resultado;
-      setBreadcrumb(c.name);
-      await mostrarContenido(c.id, c.name);
-      return;
-    }
-
-    if(data.tipo === 'archivos') {
-      visorImgs = data.resultado;
+    // 2. Buscar imágenes con ese nombre en la carpeta actual
+    const dataImgs = await api({ action:'list', parentId, type:'images', q });
+    if(dataImgs.files?.length) {
+      visorImgs = dataImgs.files;
       ocultarEstado();
       setBreadcrumb(`Resultados: "${q}"`);
       document.getElementById('grid').innerHTML = `<div class="grid-imgs">${
-        data.resultado.map((img, i) => `
+        dataImgs.files.map((img, i) => `
           <div class="img-card" onclick="abrirVisor(${i})">
             <img src="${img.thumbnailLink}" alt="${img.name}" loading="lazy" onerror="this.style.opacity='0'">
             <div class="img-name">${img.name}</div>
           </div>`).join('')
       }</div>`;
+      return;
     }
+
+    setEstado(`No se encontraron resultados para "${q}".`);
+
   } catch(e) {
     setEstado('❌ Error al buscar.');
     console.error(e);
