@@ -199,9 +199,32 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 <script>
 const DRIVE_API_KEY = 'AIzaSyDQCuGlCxr5fh23vkE0Ysx42ORNB8-9GV4';
 const DRIVE_ROOT_ID = '1N7efR6KLBl0OvS_EXCWsVg0NhW62OKbs';
-const WS_NUMERO    = '526691549680';
+const WORKER_URL    = 'https://hidden-fire-32cb.fcristerna1.workers.dev';
+
+const WS_NUMERO = '526691549680';
 
 const TALLAS_POR_GENERO = {
+  const qs = new URLSearchParams(params).toString();
+  const res = await fetch(`${WORKER_URL}?${qs}`);
+  return res.json();
+}
+
+async function getDriveSubcarpetas(parentId) {
+  const data = await driveCall({ parentId, type: 'folders' });
+  return data.files || [];
+}
+
+async function getDriveImagenes(folderId, pageToken = null, filtro = '') {
+  const params = { parentId: folderId, type: 'images' };
+  if(filtro) params.q = filtro;
+  if(pageToken) params.pageToken = pageToken;
+  return driveCall(params);
+}
+
+async function getDriveCarpetaPorNombre(parentId, nombre) {
+  const data = await driveCall({ parentId, type: 'folders', q: nombre });
+  return data.files?.[0] || null;
+}
   'Hombre':        ['S','M','L','XL','2XL','3XL'],
   'Mujer':         ['S','M','L','XL'],
   'Niño':          ['CH (4 años)','MED (6 años)','GDE (8 años)','XL (10 años)'],
@@ -376,23 +399,28 @@ async function buscarEnDriveRecursivo(q) {
     q.trim(),
     normalizarTexto(q),
     q.trim().charAt(0).toUpperCase() + q.trim().slice(1),
-    normalizarTexto(q).charAt(0).toUpperCase() + normalizarTexto(q).slice(1),
-    q.trim().toUpperCase()
+    normalizarTexto(q).charAt(0).toUpperCase() + normalizarTexto(q).slice(1)
   ])];
 
-  // Buscar carpetas en TODO Drive con ese nombre
+  // 1. Buscar subcarpeta en categorías raíz
+  const cats = await getDriveSubcarpetas(DRIVE_ROOT_ID);
+  for(const cat of cats) {
+    for(const v of variantes) {
+      const data = await driveCall({ parentId: cat.id, type: 'folders', q: v });
+      if(data.files?.length) return { tipo: 'carpeta', carpeta: data.files[0] };
+    }
+  }
+
+  // 2. Buscar también en raíz directamente
   for(const v of variantes) {
-    const url = `https://www.googleapis.com/drive/v3/files?q=name+contains+'${encodeURIComponent(v)}'+and+mimeType='application/vnd.google-apps.folder'+and+trashed=false&fields=files(id,name,parents)&key=${DRIVE_API_KEY}`;
-    const res  = await fetch(url);
-    const data = await res.json();
+    const data = await driveCall({ parentId: DRIVE_ROOT_ID, type: 'folders', q: v });
     if(data.files?.length) return { tipo: 'carpeta', carpeta: data.files[0] };
   }
 
-  // Buscar archivos en TODO Drive con ese nombre
+  // 3. Buscar archivos en carpeta actual o raíz
+  const parentId = carpetaActualId || DRIVE_ROOT_ID;
   for(const v of variantes) {
-    const url = `https://www.googleapis.com/drive/v3/files?q=name+contains+'${encodeURIComponent(v)}'+and+mimeType+contains+'image/'+and+trashed=false&fields=files(id,name,thumbnailLink)&pageSize=96&orderBy=name&key=${DRIVE_API_KEY}`;
-    const res  = await fetch(url);
-    const data = await res.json();
+    const data = await driveCall({ parentId, type: 'images', q: v });
     if(data.files?.length) return { tipo: 'archivos', archivos: data.files };
   }
 
