@@ -208,9 +208,10 @@ async function driveCall(params) {
   return res.json();
 }
 
-async function getDriveSubcarpetas(parentId) {
-  const data = await driveCall({ action: 'list', parentId, type: 'folders' });
-  return data.files || [];
+async function getDriveSubcarpetas(parentId, pageToken = null) {
+  const params = { action: 'list', parentId, type: 'folders' };
+  if(pageToken) params.pageToken = pageToken;
+  return driveCall(params);
 }
 
 async function getDriveImagenes(folderId, pageToken = null, filtro = '') {
@@ -246,30 +247,6 @@ let carpetaActualId = null;
 
 // Historial de navegación para el botón volver
 let historial = [];
-
-// ── DRIVE ──────────────────────────────────────────────────
-async function getDriveSubcarpetas(parentId) {
-  const url = `https://www.googleapis.com/drive/v3/files?q='${parentId}'+in+parents+and+mimeType='application/vnd.google-apps.folder'+and+trashed=false&fields=files(id,name)&orderBy=name&key=${DRIVE_API_KEY}`;
-  const res  = await fetch(url);
-  const data = await res.json();
-  return data.files || [];
-}
-
-async function getDriveImagenes(folderId, pageToken = null, filtro = '') {
-  let q = `'${folderId}'+in+parents+and+mimeType+contains+'image/'+and+trashed=false`;
-  if(filtro) q += `+and+name+contains+'${encodeURIComponent(filtro)}'`;
-  let url = `https://www.googleapis.com/drive/v3/files?q=${q}&fields=nextPageToken,files(id,name,thumbnailLink)&pageSize=96&orderBy=name&key=${DRIVE_API_KEY}`;
-  if(pageToken) url += `&pageToken=${pageToken}`;
-  const res = await fetch(url);
-  return res.json();
-}
-
-async function getDriveCarpetaPorNombre(parentId, nombre) {
-  const url = `https://www.googleapis.com/drive/v3/files?q='${parentId}'+in+parents+and+name+contains+'${encodeURIComponent(nombre)}'+and+mimeType='application/vnd.google-apps.folder'+and+trashed=false&fields=files(id,name)&key=${DRIVE_API_KEY}`;
-  const res  = await fetch(url);
-  const data = await res.json();
-  return data.files?.[0] || null;
-}
 
 // ── NAVEGACIÓN ─────────────────────────────────────────────
 window.selCategoria = async function(cat, btn) {
