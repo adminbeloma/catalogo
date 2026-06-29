@@ -200,10 +200,9 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 const DRIVE_API_KEY = 'AIzaSyDQCuGlCxr5fh23vkE0Ysx42ORNB8-9GV4';
 const DRIVE_ROOT_ID = '1N7efR6KLBl0OvS_EXCWsVg0NhW62OKbs';
 const WORKER_URL    = 'https://hidden-fire-32cb.fcristerna1.workers.dev';
-
 const WS_NUMERO = '526691549680';
 
-const TALLAS_POR_GENERO = {
+async function driveCall(params) {
   const qs = new URLSearchParams(params).toString();
   const res = await fetch(`${WORKER_URL}?${qs}`);
   return res.json();
@@ -225,6 +224,8 @@ async function getDriveCarpetaPorNombre(parentId, nombre) {
   const data = await driveCall({ parentId, type: 'folders', q: nombre });
   return data.files?.[0] || null;
 }
+
+const TALLAS_POR_GENERO = {
   'Hombre':        ['S','M','L','XL','2XL','3XL'],
   'Mujer':         ['S','M','L','XL'],
   'Niño':          ['CH (4 años)','MED (6 años)','GDE (8 años)','XL (10 años)'],
