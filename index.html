@@ -280,26 +280,53 @@ async function navegarCarpeta(folderId, breadcrumb) {
   carpetaActualId = folderId;
   actualizarBreadcrumb(breadcrumb);
 
-  // Ver si tiene subcarpetas
-  const subs = await getDriveSubcarpetas(folderId);
+  const data = await getDriveSubcarpetas(folderId);
+  const subs = data.files || [];
   if(subs.length > 0) {
-    mostrarCarpetas(subs, folderId, breadcrumb);
+    mostrarCarpetas(subs, folderId, breadcrumb, data.nextPageToken);
   } else {
     await mostrarImagenes(folderId, null, breadcrumb);
   }
 }
 
-function mostrarCarpetas(carpetas, parentId, breadcrumb) {
+function mostrarCarpetas(carpetas, parentId, breadcrumb, nextPageToken) {
   ocultarEstado();
-  document.getElementById('catalogo-paginacion').innerHTML = '';
-  document.getElementById('catalogo-grid').innerHTML = `
-    <div class="grid-carpetas">
-      ${carpetas.map(c => `
-        <div class="carpeta-card" onclick="entrarCarpeta('${c.id}','${c.name.replace(/'/g,"\\'")}','${breadcrumb.replace(/'/g,"\\'")}')">
-          <div class="icon">📁</div>
-          <div class="name">${c.name}</div>
-        </div>`).join('')}
-    </div>`;
+  const grid = document.getElementById('catalogo-grid');
+  const pag  = document.getElementById('catalogo-paginacion');
+  grid.innerHTML = `<div class="grid-carpetas" id="carpetas-inner">${renderCarpetasHTML(carpetas, breadcrumb)}</div>`;
+  pag.innerHTML = '';
+  if(nextPageToken) {
+    agregarBotonMasCarpetas(parentId, breadcrumb, nextPageToken);
+  }
+}
+
+function renderCarpetasHTML(carpetas, breadcrumb) {
+  return carpetas.map(c => `
+    <div class="carpeta-card" onclick="entrarCarpeta('${c.id}','${c.name.replace(/'/g,"\\'")}','${breadcrumb.replace(/'/g,"\\'")}')">
+      <div class="icon">📁</div>
+      <div class="name">${c.name}</div>
+    </div>`).join('');
+}
+
+function agregarBotonMasCarpetas(parentId, breadcrumb, token) {
+  const pag = document.getElementById('catalogo-paginacion');
+  pag.innerHTML = '';
+  const btn = document.createElement('button');
+  btn.className = 'btn-mas';
+  btn.textContent = 'Ver más →';
+  btn.onclick = async () => {
+    btn.textContent = '⏳ Cargando...';
+    btn.disabled = true;
+    const data = await getDriveSubcarpetas(parentId, token);
+    const inner = document.getElementById('carpetas-inner');
+    if(inner) inner.innerHTML += renderCarpetasHTML(data.files || [], breadcrumb);
+    if(data.nextPageToken) {
+      agregarBotonMasCarpetas(parentId, breadcrumb, data.nextPageToken);
+    } else {
+      pag.innerHTML = '';
+    }
+  };
+  pag.appendChild(btn);
 }
 
 window.entrarCarpeta = async function(folderId, nombre, breadcrumbPadre) {
