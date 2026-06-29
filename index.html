@@ -81,7 +81,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 <body>
 
 <div class="header">
-  <div style="font-family:'DM Serif Display',serif;color:#fff;font-size:16px;">Playeras Beloma</div>
+  <img src="logo-beloma.png" alt="Playeras Beloma" style="height:40px;object-fit:contain;">
   <button class="carrito-btn" onclick="abrirCarrito()">
     🛒 Mi pedido <span class="carrito-badge" id="c-count">0</span>
   </button>
@@ -273,9 +273,13 @@ async function mostrarContenido(folderId, breadcrumb, esRaizCat = false) {
     visorImgs = imgs;
     html += `<div class="grid-imgs" id="imgs-inner">${
       imgs.map((img, i) => `
-        <div class="img-card" onclick="abrirVisor(${i})">
-          <img src="${img.thumbnailLink}" alt="${img.name}" loading="lazy" onerror="this.style.opacity='0'">
-          <div class="img-name">${img.name}</div>
+        <div class="img-card">
+          <img src="${img.thumbnailLink}" alt="${img.name}" loading="lazy" onerror="this.style.opacity='0'" onclick="abrirVisor(${i})" style="cursor:pointer;">
+          <div class="img-name">${img.name.replace(/\.\w+$/,'')}</div>
+          <button onclick="pedirPlayera('${img.name.replace(/\.\w+$/,'').replace(/'/g,'\\'')}')"
+            style="width:calc(100% - 16px);margin:0 8px 8px;background:var(--verde);color:#fff;
+                   border:none;border-radius:8px;padding:7px;font-size:12px;font-weight:600;
+                   cursor:pointer;font-family:'Inter',sans-serif;">🛒 Pedir esta</button>
         </div>`).join('')
     }</div>`;
   }
@@ -303,9 +307,13 @@ async function mostrarMasImgs(folderId, pageToken) {
   const inner = document.getElementById('imgs-inner');
   if(inner) inner.innerHTML += imgs.map((img, i) => {
     const idx = visorImgs.length - imgs.length + i;
-    return `<div class="img-card" onclick="abrirVisor(${idx})">
-      <img src="${img.thumbnailLink}" alt="${img.name}" loading="lazy" onerror="this.style.opacity='0'">
-      <div class="img-name">${img.name}</div>
+    return `<div class="img-card">
+      <img src="${img.thumbnailLink}" alt="${img.name}" loading="lazy" onerror="this.style.opacity='0'" onclick="abrirVisor(${idx})" style="cursor:pointer;">
+      <div class="img-name">${img.name.replace(/\.\w+$/,'')}</div>
+      <button onclick="pedirPlayera('${img.name.replace(/\.\w+$/,'').replace(/'/g,'\\'')}')"
+        style="width:calc(100% - 16px);margin:0 8px 8px;background:var(--verde);color:#fff;
+               border:none;border-radius:8px;padding:7px;font-size:12px;font-weight:600;
+               cursor:pointer;font-family:'Inter',sans-serif;">🛒 Pedir esta</button>
     </div>`;
   }).join('');
   const pag = document.getElementById('pag');
@@ -391,9 +399,13 @@ async function mostrarImgs(folderId, pageToken) {
   const grid = document.getElementById('grid');
   const cards = imgs.map((img, i) => {
     const idx = visorImgs.length - imgs.length + i;
-    return `<div class="img-card" onclick="abrirVisor(${idx})">
-      <img src="${img.thumbnailLink}" alt="${img.name}" loading="lazy" onerror="this.style.opacity='0'">
-      <div class="img-name">${img.name}</div>
+    return `<div class="img-card">
+      <img src="${img.thumbnailLink}" alt="${img.name}" loading="lazy" onerror="this.style.opacity='0'" onclick="abrirVisor(${idx})" style="cursor:pointer;">
+      <div class="img-name">${img.name.replace(/\.\w+$/,'')}</div>
+      <button onclick="pedirPlayera('${img.name.replace(/\.\w+$/,'').replace(/'/g,'\\'')}')"
+        style="width:calc(100% - 16px);margin:0 8px 8px;background:var(--verde);color:#fff;
+               border:none;border-radius:8px;padding:7px;font-size:12px;font-weight:600;
+               cursor:pointer;font-family:'Inter',sans-serif;">🛒 Pedir esta</button>
     </div>`;
   }).join('');
 
@@ -420,39 +432,38 @@ window.buscar = async function() {
   const q = document.getElementById('q-input').value.trim();
   if(!q) return;
 
-  const parentId = carpetaId || ROOT;
   setEstado('⏳ Buscando...');
   visorImgs = [];
   document.getElementById('pag').innerHTML = '';
 
   try {
-    // 1. Buscar subcarpeta con ese nombre en la carpeta actual
-    const dataFolders = await api({ action:'list', parentId, type:'folders', q });
-    if(dataFolders.files?.length) {
-      const found = dataFolders.files[0];
-      historial.push({ folderId: carpetaId, breadcrumb: document.getElementById('breadcrumb').dataset.texto || '' });
-      await mostrarContenido(found.id, found.name);
+    const parentId = carpetaId || ROOT;
+    const data = await api({ action:'search', q, parentId, rootId: ROOT });
+
+    if(!data || data.tipo === 'nada') {
+      setEstado(`No se encontraron resultados para "${q}".`);
       return;
     }
 
-    // 2. Buscar imágenes con ese nombre en la carpeta actual
-    const dataImgs = await api({ action:'list', parentId, type:'images', q });
-    if(dataImgs.files?.length) {
-      visorImgs = dataImgs.files;
+    if(data.tipo === 'carpeta') {
+      const c = data.resultado;
+      historial.push({ folderId: carpetaId, breadcrumb: document.getElementById('breadcrumb').dataset.texto || '' });
+      await mostrarContenido(c.id, c.name);
+      return;
+    }
+
+    if(data.tipo === 'archivos') {
+      visorImgs = data.resultado;
       ocultarEstado();
       setBreadcrumb(`Resultados: "${q}"`);
       document.getElementById('grid').innerHTML = `<div class="grid-imgs">${
-        dataImgs.files.map((img, i) => `
+        data.resultado.map((img, i) => `
           <div class="img-card" onclick="abrirVisor(${i})">
             <img src="${img.thumbnailLink}" alt="${img.name}" loading="lazy" onerror="this.style.opacity='0'">
             <div class="img-name">${img.name}</div>
           </div>`).join('')
       }</div>`;
-      return;
     }
-
-    setEstado(`No se encontraron resultados para "${q}".`);
-
   } catch(e) {
     setEstado('❌ Error al buscar.');
     console.error(e);
@@ -582,6 +593,11 @@ window.enviarWs = function() {
   });
   msg+=`\n¿Pueden confirmar disponibilidad? ¡Gracias!`;
   window.open(`https://wa.me/${WS}?text=${encodeURIComponent(msg)}`,'_blank');
+};
+
+window.pedirPlayera = function(nombre) {
+  const msg = `Hola! Vi este diseño en el catálogo de Playeras Beloma y me interesa pedirlo 👕\n\n*Diseño:* ${nombre}\n\n¿Me pueden dar información sobre precio, tallas y colores disponibles? ¡Gracias!`;
+  window.open(`https://wa.me/${WS}?text=${encodeURIComponent(msg)}`, '_blank');
 };
 
 window.cerrarOverlay = function(id) { document.getElementById(id).classList.remove('open'); };
