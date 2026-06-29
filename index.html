@@ -365,15 +365,99 @@ window.volverANivel = async function(nivel) {
   await navegarCarpeta(entrada.id, entrada.breadcrumb || entrada.nombre);
 };
 
+// ── NORMALIZACIÓN ──────────────────────────────────────────
+function normalizarTexto(texto) {
+  return texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+}
+
+function generarVariantes(q) {
+  const base = normalizarTexto(q);
+  const conAcento = q.trim();
+  const variantes = new Set([
+    base,
+    conAcento,
+    base.charAt(0).toUpperCase() + base.slice(1),
+    conAcento.charAt(0).toUpperCase() + conAcento.slice(1),
+    base.toUpperCase(),
+    conAcento.toUpperCase()
+  ]);
+  return [...variantes];
+}
+
+async function getDriveCarpetaPorNombreFlexible(parentId, q) {
+  // Buscar con la query normalizada y sin normalizar
+  const variantes = generarVariantes(q);
+  for(const v of variantes) {
+    const url = `https://www.googleapis.com/drive/v3/files?q='${parentId}'+in+parents+and+name+contains+'${encodeURIComponent(v)}'+and+mimeType='application/vnd.google-apps.folder'+and+trashed=false&fields=files(id,name)&key=${DRIVE_API_KEY}`;
+    const res  = await fetch(url);
+    const data = await res.json();
+    if(data.files?.length) return data.files[0];
+  }
+  return null;
+}
+
+async function getDriveImagenesFlexible(folderId, pageToken, q) {
+  // Buscar con variantes del texto
+  const variantes = generarVariantes(q);
+  let todasImgs = [];
+  let nextToken = null;
+  for(const v of variantes) {
+    let url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+mimeType+contains+'image/'+and+name+contains+'${encodeURIComponent(v)}'+and+trashed=false&fields=nextPageToken,files(id,name,thumbnailLink)&pageSize=96&orderBy=name&key=${DRIVE_API_KEY}`;
+    if(pageToken) url += `&pageToken=${pageToken}`;
+    const res  = await fetch(url);
+    const data = await res.json();
+    if(data.files?.length) {
+      // Agregar solo las que no estén ya
+      const ids = new Set(todasImgs.map(i => i.id));
+      data.files.forEach(f => { if(!ids.has(f.id)) todasImgs.push(f); });
+      if(data.nextPageToken) nextToken = data.nextPageToken;
+    }
+  }
+  return { files: todasImgs, nextPageToken: nextToken };
+}
+
 // ── BÚSQUEDA POR NOMBRE ────────────────────────────────────
 window.buscarArchivo = async function() {
   const q = document.getElementById('search-input').value.trim();
   if(!q) return;
-  if(!carpetaActualId) { alert('Selecciona una categoría primero'); return; }
+
+  const parentId = carpetaActualId || DRIVE_ROOT_ID;
   mostrarEstado('⏳ Buscando...');
   visorImgs = [];
   document.getElementById('catalogo-paginacion').innerHTML = '';
-  await mostrarImagenes(carpetaActualId, null, '', q);
+
+  try {
+    // 1. Buscar subcarpeta con nombre similar
+    const subcarpeta = await getDriveCarpetaPorNombreFlexible(parentId, q);
+    if(subcarpeta) {
+      const breadcrumbActual = document.getElementById('breadcrumb').textContent || '';
+      const nuevoBreadcrumb = breadcrumbActual ? breadcrumbActual + ' › ' + subcarpeta.name : subcarpeta.name;
+      historial.push({ id: subcarpeta.id, nombre: subcarpeta.name, breadcrumb: nuevoBreadcrumb });
+      await navegarCarpeta(subcarpeta.id, nuevoBreadcrumb);
+      return;
+    }
+
+    // 2. Buscar archivos con nombre similar
+    const data = await getDriveImagenesFlexible(parentId, null, q);
+    if(!data.files.length) {
+      mostrarEstado(`No se encontraron resultados para "${q}".`);
+      return;
+    }
+    ocultarEstado();
+    visorImgs = data.files;
+    actualizarBreadcrumb(`Resultados para "${q}"`);
+    document.getElementById('catalogo-grid').innerHTML = `<div class="grid-imgs">${
+      data.files.map((img, i) => `
+        <div class="img-card" onclick="abrirVisor(${i})">
+          <img src="${img.thumbnailLink}" alt="${img.name}" loading="lazy" onerror="this.style.background='#eee';this.src='';">
+          <div class="img-name">${img.name}</div>
+        </div>`).join('')
+    }</div>`;
+
+  } catch(e) {
+    mostrarEstado('❌ Error al buscar.');
+    console.error(e);
+  }
 };
 
 // ── UTILIDADES ─────────────────────────────────────────────
