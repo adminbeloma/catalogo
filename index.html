@@ -5,75 +5,78 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Catálogo — Playeras Beloma</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap');
-:root{--verde:#6AAB1F;--magenta:#D4117A;--dark:#1A1A1A;--bg:#F8F8F6;--card:#fff;--border:#E8E8E4;--text:#1A1A1A;--soft:#6B6B6B;--ws:#25D366;}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=DM+Serif+Display&display=swap');
+:root{--verde:#6AAB1F;--magenta:#D4117A;--dark:#1A1A1A;--bg:#F8F8F6;--card:#fff;--border:#E8E8E4;--soft:#6B6B6B;--ws:#25D366;}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
-.header{background:var(--dark);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
-.carrito-btn{background:var(--magenta);color:#fff;border:none;border-radius:20px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;}
-.carrito-badge{background:#fff;color:var(--magenta);border-radius:50%;width:18px;height:18px;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;}
-.hero{background:linear-gradient(135deg,var(--dark) 0%,#2D1A2E 100%);padding:28px 20px;text-align:center;color:#fff;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--dark);}
+/* HEADER */
+.header{background:var(--dark);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.header img{height:38px;object-fit:contain;}
+.btn-carrito{background:var(--magenta);color:#fff;border:none;border-radius:20px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;font-family:'Inter',sans-serif;}
+.badge{background:#fff;color:var(--magenta);border-radius:50%;width:18px;height:18px;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+/* HERO */
+.hero{background:linear-gradient(135deg,#1A1A1A,#2D1A2E);padding:28px 20px;text-align:center;color:#fff;}
 .hero h1{font-family:'DM Serif Display',serif;font-size:26px;margin-bottom:6px;}
 .hero p{font-size:13px;color:rgba(255,255,255,0.6);margin-bottom:18px;}
-.search-bar{max-width:500px;margin:0 auto;display:flex;gap:8px;}
-.search-bar input{flex:1;border:none;border-radius:25px;padding:11px 18px;font-size:14px;outline:none;font-family:'Inter',sans-serif;}
-.search-bar button{background:var(--verde);color:#fff;border:none;border-radius:25px;padding:11px 20px;font-size:14px;font-weight:600;cursor:pointer;}
-.nav-bar{background:#fff;border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
-.nav-btn{padding:6px 14px;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;border:1.5px solid var(--border);color:var(--soft);background:#fff;transition:all 0.15s;font-family:'Inter',sans-serif;white-space:nowrap;}
-.nav-btn.active{background:var(--dark);color:#fff;border-color:var(--dark);}
-.nav-btn:hover:not(.active){border-color:var(--verde);color:var(--verde);}
-.breadcrumb{padding:10px 20px;font-size:12px;color:var(--soft);display:flex;align-items:center;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--border);background:#fff;}
-.breadcrumb .bc-link{cursor:pointer;color:var(--verde);}
+.barra-buscar{max-width:500px;margin:0 auto;display:flex;gap:8px;}
+.barra-buscar input{flex:1;border:none;border-radius:25px;padding:11px 18px;font-size:14px;outline:none;font-family:'Inter',sans-serif;}
+.barra-buscar button{background:var(--verde);color:#fff;border:none;border-radius:25px;padding:11px 20px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;}
+/* NAV */
+.nav-cats{background:#fff;border-bottom:1px solid var(--border);padding:10px 20px;display:flex;gap:6px;flex-wrap:wrap;}
+.cat-btn{padding:6px 14px;border-radius:20px;font-size:13px;border:1.5px solid var(--border);color:var(--soft);background:#fff;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.15s;}
+.cat-btn.activo{background:var(--dark);color:#fff;border-color:var(--dark);}
+/* BREADCRUMB */
+.breadcrumb{padding:10px 20px;font-size:12px;color:var(--soft);display:none;align-items:center;gap:8px;border-bottom:1px solid var(--border);background:#fff;flex-wrap:wrap;}
+.breadcrumb button{background:none;border:1.5px solid var(--border);border-radius:20px;padding:3px 12px;font-size:11px;cursor:pointer;font-family:'Inter',sans-serif;}
+/* CONTENT */
 .content{padding:16px 20px;}
-.grid-carpetas{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:16px;}
-.carpeta-card{background:var(--card);border-radius:12px;border:1px solid var(--border);padding:14px 8px;text-align:center;cursor:pointer;transition:all 0.15s;}
-.carpeta-card:hover{border-color:var(--verde);transform:translateY(-2px);}
-.carpeta-card .icon{font-size:32px;margin-bottom:6px;}
-.carpeta-card .name{font-size:11px;font-weight:600;line-height:1.3;word-break:break-word;}
+.estado{text-align:center;padding:40px;color:var(--soft);font-size:14px;}
+.grid-carpetas{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:14px;}
+.carpeta{background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px 8px;text-align:center;cursor:pointer;transition:all 0.15s;}
+.carpeta:hover{border-color:var(--verde);transform:translateY(-2px);}
+.carpeta-icon{font-size:30px;margin-bottom:6px;}
+.carpeta-name{font-size:11px;font-weight:600;line-height:1.3;word-break:break-word;}
 .grid-imgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;}
-.img-card{background:var(--card);border-radius:12px;border:1px solid var(--border);overflow:hidden;cursor:pointer;transition:all 0.15s;}
-.img-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.08);}
-.img-card img{width:100%;aspect-ratio:1;object-fit:cover;background:#f0f0ec;display:block;}
-.img-card .img-name{padding:5px 8px;font-size:10px;color:var(--soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.estado-txt{text-align:center;padding:40px;color:var(--soft);font-size:14px;}
-.pag-wrap{display:flex;justify-content:center;margin-top:16px;}
-.btn-mas{background:#fff;border:1.5px solid var(--border);border-radius:20px;padding:10px 24px;font-size:13px;cursor:pointer;font-family:'Inter',sans-serif;font-weight:600;}
+.img-card{background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:all 0.15s;}
+.img-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.1);transform:translateY(-2px);}
+.img-card img{width:100%;aspect-ratio:1;object-fit:cover;display:block;cursor:pointer;}
+.img-card .img-nombre{padding:6px 8px 4px;font-size:11px;color:var(--soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.img-card .btn-pedir{display:block;width:calc(100% - 16px);margin:0 8px 8px;background:var(--verde);color:#fff;border:none;border-radius:8px;padding:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;}
+.btn-mas{display:block;margin:14px auto 0;background:#fff;border:1.5px solid var(--border);border-radius:20px;padding:10px 24px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;}
 .btn-mas:hover{border-color:var(--verde);color:var(--verde);}
 /* VISOR */
-#visor{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.93);z-index:2000;align-items:center;justify-content:center;}
-#visor.open{display:flex;}
-#visor-img{max-width:90vw;max-height:85vh;object-fit:contain;border-radius:8px;}
-.vbtn{position:absolute;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:28px;cursor:pointer;border-radius:50%;width:48px;height:48px;display:flex;align-items:center;justify-content:center;}
-#visor-cerrar{top:14px;right:14px;font-size:22px;}
-#visor-prev{left:10px;top:50%;transform:translateY(-50%);}
-#visor-next{right:10px;top:50%;transform:translateY(-50%);}
-#visor-info{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.6);font-size:11px;max-width:80%;text-align:center;}
-#visor-count{position:absolute;top:16px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.5);font-size:11px;}
-/* MODAL PEDIDO */
+#visor{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.93);z-index:2000;flex-direction:column;align-items:center;justify-content:center;}
+#visor.abierto{display:flex;}
+#visor img{max-width:90vw;max-height:82vh;object-fit:contain;border-radius:8px;}
+.visor-info{color:rgba(255,255,255,0.6);font-size:12px;margin-top:10px;text-align:center;max-width:80%;}
+.visor-count{color:rgba(255,255,255,0.4);font-size:11px;position:absolute;top:16px;left:50%;transform:translateX(-50%);}
+.vbtn{position:absolute;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:26px;cursor:pointer;border-radius:50%;width:46px;height:46px;display:flex;align-items:center;justify-content:center;}
+#vbtn-cerrar{top:14px;right:14px;font-size:20px;}
+#vbtn-prev{left:10px;top:50%;transform:translateY(-50%);}
+#vbtn-next{right:10px;top:50%;transform:translateY(-50%);}
+/* MODAL PEDIR */
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:500;align-items:flex-end;justify-content:center;}
-.overlay.open{display:flex;}
-.modal{background:#fff;border-radius:24px 24px 0 0;width:100%;max-width:560px;max-height:92vh;overflow-y:auto;}
-.modal-body{padding:20px;}
-.lbl{font-size:11px;font-weight:700;color:var(--soft);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;}
-.opts{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;}
-.opt{padding:7px 14px;border-radius:8px;border:1.5px solid var(--border);font-size:13px;font-weight:500;cursor:pointer;background:#fff;font-family:'Inter',sans-serif;}
-.opt.active{background:var(--dark);color:#fff;border-color:var(--dark);}
-.cant-row{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
-.cant-btn{width:36px;height:36px;border-radius:50%;border:1.5px solid var(--border);background:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-.btn-agregar{width:100%;background:var(--verde);color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;margin-bottom:10px;}
-.btn-cerrar{width:100%;background:transparent;color:var(--soft);border:1.5px solid var(--border);border-radius:12px;padding:12px;font-size:14px;cursor:pointer;font-family:'Inter',sans-serif;}
+.overlay.abierto{display:flex;}
+.modal{background:#fff;border-radius:24px 24px 0 0;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;padding:20px;}
+.modal h2{font-family:'DM Serif Display',serif;font-size:20px;margin-bottom:16px;}
+.modal input,.modal textarea{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;font-size:14px;font-family:'Inter',sans-serif;outline:none;margin-bottom:10px;}
+.btn-ws-pedir{width:100%;background:var(--ws);color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;margin-bottom:8px;}
+.btn-cancel{width:100%;background:transparent;border:1.5px solid var(--border);border-radius:12px;padding:12px;font-size:14px;cursor:pointer;font-family:'Inter',sans-serif;color:var(--soft);}
 /* CARRITO */
 .c-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:600;align-items:flex-end;justify-content:center;}
-.c-overlay.open{display:flex;}
+.c-overlay.abierto{display:flex;}
 .c-panel{background:#fff;border-radius:24px 24px 0 0;width:100%;max-width:560px;max-height:85vh;overflow-y:auto;padding:20px;}
-.c-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
-.c-item img{width:56px;height:56px;border-radius:8px;object-fit:cover;flex-shrink:0;}
-.c-total{display:flex;justify-content:space-between;padding:14px 0;font-size:15px;font-weight:700;}
-.btn-ws{width:100%;background:var(--ws);color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;}
-.btn-vaciar{width:100%;background:transparent;color:var(--soft);border:1.5px solid var(--border);border-radius:12px;padding:12px;font-size:14px;cursor:pointer;font-family:'Inter',sans-serif;margin-top:8px;}
+.c-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);align-items:center;}
+.c-item img{width:54px;height:54px;border-radius:8px;object-fit:cover;flex-shrink:0;}
+.c-item-info{flex:1;}
+.c-item-nombre{font-weight:600;font-size:13px;}
+.c-item-det{font-size:11px;color:var(--soft);margin-top:2px;}
+.c-total{display:flex;justify-content:space-between;padding:12px 0;font-weight:700;font-size:15px;}
+.btn-ws-carrito{width:100%;background:var(--ws);color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-vaciar{width:100%;background:transparent;border:1.5px solid var(--border);border-radius:12px;padding:12px;font-size:13px;cursor:pointer;font-family:'Inter',sans-serif;margin-top:8px;color:var(--soft);}
 @media(min-width:600px){
   .overlay,.c-overlay{align-items:center;padding:20px;}
-  .modal,.c-panel{border-radius:20px;max-height:90vh;}
+  .modal,.c-panel{border-radius:20px;}
   .grid-imgs{grid-template-columns:repeat(auto-fill,minmax(180px,1fr));}
 }
 </style>
@@ -81,84 +84,72 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 <body>
 
 <div class="header">
-  <img src="logo-beloma.png" alt="Playeras Beloma" style="height:40px;object-fit:contain;">
-  <button class="carrito-btn" onclick="abrirCarrito()">
-    🛒 Mi pedido <span class="carrito-badge" id="c-count">0</span>
+  <img src="logo-beloma.png" alt="Playeras Beloma">
+  <button class="btn-carrito" onclick="verCarrito()">
+    🛒 Mi pedido <span class="badge" id="badge">0</span>
   </button>
 </div>
 
 <div class="hero">
   <h1>Catálogo de Diseños</h1>
-  <p>Elige tu categoría y encuentra tu diseño favorito</p>
-  <div class="search-bar">
-    <input type="text" id="q-input" placeholder="Buscar diseño..."
+  <p>Encuentra tu diseño favorito y pídelo por WhatsApp</p>
+  <div class="barra-buscar">
+    <input type="text" id="inp-buscar" placeholder="Buscar diseño..."
       onkeydown="if(event.key==='Enter')buscar()">
     <button onclick="buscar()">Buscar</button>
   </div>
 </div>
 
-<div class="nav-bar">
-  <button class="nav-btn active" data-cat="" onclick="selCat(this)">✨ Todas</button>
-  <button class="nav-btn" data-cat="Anime" onclick="selCat(this)">Anime</button>
-  <button class="nav-btn" data-cat="Caricaturas Actuales" onclick="selCat(this)">Caricaturas Actuales</button>
-  <button class="nav-btn" data-cat="Caricaturas Retro" onclick="selCat(this)">Caricaturas Retro</button>
-  <button class="nav-btn" data-cat="Deportes" onclick="selCat(this)">Deportes</button>
-  <button class="nav-btn" data-cat="Diseños" onclick="selCat(this)">Diseños</button>
-  <button class="nav-btn" data-cat="Grupos Musicales" onclick="selCat(this)">Grupos Musicales</button>
-  <button class="nav-btn" data-cat="Juguetes & Juegos" onclick="selCat(this)">Juguetes & Juegos</button>
-  <button class="nav-btn" data-cat="Libros, Revistas y Cómics" onclick="selCat(this)">Libros & Cómics</button>
-  <button class="nav-btn" data-cat="Peliculas" onclick="selCat(this)">Películas</button>
-  <button class="nav-btn" data-cat="Personajes" onclick="selCat(this)">Personajes</button>
-  <button class="nav-btn" data-cat="Series" onclick="selCat(this)">Series</button>
-  <button class="nav-btn" data-cat="Superheroes" onclick="selCat(this)">Superhéroes</button>
-  <button class="nav-btn" data-cat="Videojuegos" onclick="selCat(this)">Videojuegos</button>
+<div class="nav-cats" id="nav-cats">
+  <button class="cat-btn activo" data-cat="" onclick="selCat(this)">✨ Todas</button>
+  <button class="cat-btn" data-cat="Anime" onclick="selCat(this)">Anime</button>
+  <button class="cat-btn" data-cat="Caricaturas Actuales" onclick="selCat(this)">Caricaturas Actuales</button>
+  <button class="cat-btn" data-cat="Caricaturas Retro" onclick="selCat(this)">Caricaturas Retro</button>
+  <button class="cat-btn" data-cat="Deportes" onclick="selCat(this)">Deportes</button>
+  <button class="cat-btn" data-cat="Diseños" onclick="selCat(this)">Diseños</button>
+  <button class="cat-btn" data-cat="Grupos Musicales" onclick="selCat(this)">Grupos Musicales</button>
+  <button class="cat-btn" data-cat="Juguetes & Juegos" onclick="selCat(this)">Juguetes & Juegos</button>
+  <button class="cat-btn" data-cat="Libros, Revistas y Cómics" onclick="selCat(this)">Libros & Cómics</button>
+  <button class="cat-btn" data-cat="Peliculas" onclick="selCat(this)">Películas</button>
+  <button class="cat-btn" data-cat="Personajes" onclick="selCat(this)">Personajes</button>
+  <button class="cat-btn" data-cat="Series" onclick="selCat(this)">Series</button>
+  <button class="cat-btn" data-cat="Superheroes" onclick="selCat(this)">Superhéroes</button>
+  <button class="cat-btn" data-cat="Videojuegos" onclick="selCat(this)">Videojuegos</button>
 </div>
 
-<div id="breadcrumb" class="breadcrumb" style="display:none;"></div>
+<div class="breadcrumb" id="breadcrumb">
+  <button onclick="volverAtras()">← Volver</button>
+  <span id="bc-texto"></span>
+</div>
 
 <div class="content">
-  <div id="estado" class="estado-txt">Selecciona una categoría para explorar.</div>
-  <div id="grid"></div>
-  <div id="pag" class="pag-wrap"></div>
+  <div class="estado" id="estado">Selecciona una categoría para explorar.</div>
+  <div id="grid-carpetas" class="grid-carpetas" style="display:none;"></div>
+  <div id="grid-imgs" class="grid-imgs" style="display:none;"></div>
+  <button class="btn-mas" id="btn-mas-carpetas" style="display:none;" onclick="masCarpetas()">Ver más subcarpetas →</button>
+  <button class="btn-mas" id="btn-mas-imgs" style="display:none;" onclick="masImgs()">Ver más imágenes →</button>
 </div>
 
 <!-- VISOR -->
 <div id="visor">
-  <button class="vbtn" id="visor-cerrar" onclick="cerrarVisor()">×</button>
-  <div id="visor-count"></div>
-  <button class="vbtn" id="visor-prev" onclick="visorNav(-1)">‹</button>
-  <img id="visor-img" src="">
-  <button class="vbtn" id="visor-next" onclick="visorNav(1)">›</button>
-  <div id="visor-info"></div>
+  <button class="vbtn" id="vbtn-cerrar" onclick="cerrarVisor()">×</button>
+  <div class="visor-count" id="visor-count"></div>
+  <button class="vbtn" id="vbtn-prev" onclick="navVisor(-1)">‹</button>
+  <img id="visor-img" src="" alt="">
+  <div class="visor-info" id="visor-info"></div>
+  <button class="vbtn" id="vbtn-next" onclick="navVisor(1)">›</button>
 </div>
 
-<!-- MODAL PEDIDO -->
-<div class="overlay" id="modal-pedido">
+<!-- MODAL PEDIR -->
+<div class="overlay" id="modal-pedir">
   <div class="modal">
-    <div id="mp-img"></div>
-    <div class="modal-body">
-      <div style="font-family:'DM Serif Display',serif;font-size:20px;margin-bottom:4px;" id="mp-nombre"></div>
-      <div class="lbl" style="margin-top:12px;">Color de playera</div>
-      <div class="opts" id="mp-colores"></div>
-      <div class="lbl">Género</div>
-      <div class="opts" id="mp-generos"></div>
-      <div class="lbl">Talla</div>
-      <div class="opts" id="mp-tallas"></div>
-      <div class="lbl">Cantidad</div>
-      <div class="cant-row">
-        <button class="cant-btn" onclick="cambiarCant(-1)">−</button>
-        <span style="font-size:18px;font-weight:700;min-width:28px;text-align:center;" id="mp-cant">1</span>
-        <button class="cant-btn" onclick="cambiarCant(1)">+</button>
-      </div>
-      <input type="text" id="mp-nombre-cliente" placeholder="Tu nombre (opcional)"
-        style="width:100%;border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;
-               font-size:14px;font-family:'Inter',sans-serif;outline:none;margin-bottom:10px;">
-      <textarea id="mp-notas" placeholder="Notas (opcional)" rows="2"
-        style="width:100%;border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;
-               font-size:14px;font-family:'Inter',sans-serif;outline:none;resize:none;margin-bottom:14px;"></textarea>
-      <button class="btn-agregar" onclick="agregarAlCarrito()">🛒 Agregar al pedido</button>
-      <button class="btn-cerrar" onclick="cerrarOverlay('modal-pedido')">Cerrar</button>
-    </div>
+    <h2>🛒 Pedir diseño</h2>
+    <div id="mp-nombre-diseno" style="font-size:14px;color:var(--soft);margin-bottom:14px;"></div>
+    <input type="text" id="mp-nombre" placeholder="Tu nombre">
+    <input type="tel" id="mp-tel" placeholder="Tu WhatsApp (10 dígitos)">
+    <textarea id="mp-notas" rows="2" placeholder="¿Alguna nota o pregunta?"></textarea>
+    <button class="btn-ws-pedir" onclick="confirmarPedido()">💬 Enviar por WhatsApp</button>
+    <button class="btn-cancel" onclick="cerrarOverlay('modal-pedir')">Cancelar</button>
   </div>
 </div>
 
@@ -172,434 +163,362 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     <div id="c-items"></div>
     <div id="c-empty" style="text-align:center;padding:30px;color:var(--soft);">Tu pedido está vacío.</div>
     <div id="c-footer" style="display:none;">
-      <div class="c-total"><span>Total</span><span id="c-total">A cotizar</span></div>
-      <button class="btn-ws" onclick="enviarWs()">💬 Enviar por WhatsApp</button>
+      <div class="c-total"><span>Total</span><span>A cotizar</span></div>
+      <button class="btn-ws-carrito" onclick="enviarCarrito()">💬 Enviar pedido por WhatsApp</button>
       <button class="btn-vaciar" onclick="vaciarCarrito()">Vaciar pedido</button>
     </div>
   </div>
 </div>
 
 <script>
+// ── CONFIGURACIÓN ──────────────────────────────────────────
 const WORKER = 'https://hidden-fire-32cb.fcristerna1.workers.dev';
 const ROOT   = '1N7efR6KLBl0OvS_EXCWsVg0NhW62OKbs';
 const WS     = '526691549680';
 
-const TALLAS = {
-  'Hombre':        ['S','M','L','XL','2XL','3XL'],
-  'Mujer':         ['S','M','L','XL'],
-  'Niño':          ['CH (4a)','MED (6a)','GDE (8a)','XL (10a)'],
-  'Juvenil':       ['CH (12a)','MED (14a)','GDE (16a)','XL (18a)'],
-  'Bebé':          ['Talla 1','Talla 2','Talla 3'],
-  'Bebé Pañalero': ['3m','6m','9m','12m','18m','24m']
-};
-
-// Estado global
-let carrito = [];
-let visorImgs = [];
-let visorIdx  = 0;
-let imgActual = null;
-let colorSel = '', generoSel = '', tallaSel = '', cantSel = 1;
-let carpetaId = null;  // carpeta actual para búsqueda
+// ── ESTADO ─────────────────────────────────────────────────
+let carpetaActual  = null;  // ID carpeta actual
+let tokenCarpetas  = null;  // nextPageToken de carpetas
+let tokenImgs      = null;  // nextPageToken de imágenes
+let historial      = [];    // para botón volver
+let visorImgs      = [];    // imágenes actuales del visor
+let visorIdx       = 0;
+let pedidoActual   = null;  // diseño seleccionado para pedir
+let carrito        = [];
 
 // ── API ────────────────────────────────────────────────────
 async function api(params) {
   const qs = new URLSearchParams(params).toString();
-  const res = await fetch(`${WORKER}?${qs}`);
+  const res = await fetch(WORKER + '?' + qs);
   return res.json();
 }
 
 // ── NAVEGACIÓN ─────────────────────────────────────────────
-window.selCat = async function(btn) {
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
+function selCat(btn) {
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('activo'));
+  btn.classList.add('activo');
   const cat = btn.dataset.cat;
-  carpetaId = null;
   historial = [];
-  setBreadcrumb('');
+  carpetaActual = null;
 
-  if(!cat) {
-    setEstado('Selecciona una categoría para explorar.');
+  if (!cat) {
+    mostrarEstado('Selecciona una categoría para explorar.');
+    ocultarBreadcrumb();
     return;
   }
 
-  setEstado('⏳ Cargando...');
-  try {
-    const data = await api({ action:'list', parentId: ROOT, type:'folders', q: cat });
-    const folder = (data.files || []).find(f => f.name.toLowerCase().includes(cat.toLowerCase())) || data.files?.[0];
-    if(!folder) { setEstado('No se encontró la categoría.'); return; }
-    carpetaId = folder.id;
-    setBreadcrumb(cat);
-    await mostrarContenido(folder.id, cat);
-  } catch(e) {
-    setEstado('❌ Error al conectar.');
-    console.error(e);
-  }
-};
+  mostrarEstado('⏳ Cargando...');
+  api({ action: 'list', parentId: ROOT, type: 'folders', q: cat })
+    .then(data => {
+      const folder = (data.files || []).find(f =>
+        f.name.toLowerCase().includes(cat.toLowerCase())
+      ) || data.files?.[0];
+      if (!folder) { mostrarEstado('No se encontró la categoría.'); return; }
+      carpetaActual = folder.id;
+      setBreadcrumb(cat);
+      cargarContenido(folder.id);
+    })
+    .catch(() => mostrarEstado('❌ Error al conectar.'));
+}
 
-// Historial para volver
-let historial = [];
-
-async function mostrarContenido(folderId, breadcrumb, esRaizCat = false) {
-  setEstado('⏳ Cargando...');
-  carpetaId = folderId;
-  setBreadcrumb(breadcrumb, esRaizCat);
+function cargarContenido(folderId) {
+  mostrarEstado('⏳ Cargando...');
+  carpetaActual = folderId;
+  visorImgs = [];
 
   // Cargar subcarpetas e imágenes en paralelo
-  const [dataFolders, dataImgs] = await Promise.all([
-    api({ action:'list', parentId: folderId, type:'folders' }),
-    api({ action:'list', parentId: folderId, type:'images' })
-  ]);
+  Promise.all([
+    api({ action: 'list', parentId: folderId, type: 'folders' }),
+    api({ action: 'list', parentId: folderId, type: 'images'  })
+  ]).then(([dFolders, dImgs]) => {
+    ocultarEstado();
+    const carpetas = dFolders.files || [];
+    const imgs     = dImgs.files   || [];
+    tokenCarpetas  = dFolders.nextPageToken || null;
+    tokenImgs      = dImgs.nextPageToken    || null;
 
-  const subs = dataFolders.files || [];
-  const imgs = dataImgs.files || [];
+    if (!carpetas.length && !imgs.length) {
+      mostrarEstado('Esta carpeta está vacía.');
+      return;
+    }
 
-  ocultarEstado();
+    // Renderizar carpetas
+    const gc = document.getElementById('grid-carpetas');
+    if (carpetas.length) {
+      gc.style.display = 'grid';
+      gc.innerHTML = carpetas.map(c => carpetaCard(c, folderId)).join('');
+    } else {
+      gc.style.display = 'none';
+      gc.innerHTML = '';
+    }
 
-  if(!subs.length && !imgs.length) {
-    setEstado('Esta carpeta está vacía.');
-    return;
-  }
-
-  const grid = document.getElementById('grid');
-  let html = '';
-
-  // Subcarpetas primero
-  if(subs.length > 0) {
-    html += `<div class="grid-carpetas" id="c-inner">${carpetasHTML(subs, breadcrumb)}</div>`;
-  }
-
-  // Imágenes debajo
-  if(imgs.length > 0) {
+    // Renderizar imágenes
     visorImgs = imgs;
-    html += `<div class="grid-imgs" id="imgs-inner">${
-      imgs.map((img, i) => imgCard(img, i)).join('')
-    }</div>`;
-  }
+    const gi = document.getElementById('grid-imgs');
+    if (imgs.length) {
+      gi.style.display = 'grid';
+      gi.innerHTML = imgs.map((img, i) => imgCard(img, i)).join('');
+    } else {
+      gi.style.display = 'none';
+      gi.innerHTML = '';
+    }
 
-  grid.innerHTML = html;
+    // Botones ver más
+    document.getElementById('btn-mas-carpetas').style.display = tokenCarpetas ? 'block' : 'none';
+    document.getElementById('btn-mas-imgs').style.display = tokenImgs ? 'block' : 'none';
 
-  // Botón ver más carpetas
-  if(dataFolders.nextPageToken) renderBtnMasCarpetas(folderId, breadcrumb, dataFolders.nextPageToken);
-
-  // Botón ver más imágenes
-  if(dataImgs.nextPageToken) {
-    const pag = document.getElementById('pag');
-    const btn = document.createElement('button');
-    btn.className = 'btn-mas';
-    btn.textContent = 'Ver más imágenes →';
-    btn.onclick = () => mostrarMasImgs(folderId, dataImgs.nextPageToken);
-    pag.appendChild(btn);
-  }
+  }).catch(() => mostrarEstado('❌ Error al cargar.'));
 }
 
-async function mostrarMasImgs(folderId, pageToken) {
-  const data = await api({ action:'list', parentId: folderId, type:'images', pageToken });
-  const imgs = data.files || [];
-  visorImgs = visorImgs.concat(imgs);
-  const inner = document.getElementById('imgs-inner');
-  if(inner) inner.innerHTML += imgs.map((img, i) => {
-    const idx = visorImgs.length - imgs.length + i;
-    return imgCard(img, idx);
-  }).join('');
-  const pag = document.getElementById('pag');
-  pag.innerHTML = '';
-  if(data.nextPageToken) {
-    const btn = document.createElement('button');
-    btn.className = 'btn-mas';
-    btn.textContent = 'Ver más imágenes →';
-    btn.onclick = () => mostrarMasImgs(folderId, data.nextPageToken);
-    pag.appendChild(btn);
-  }
+function carpetaCard(c, parentId) {
+  const nombre = c.name.replace(/'/g, "\\'");
+  return '<div class="carpeta" onclick="entrarCarpeta(\'' + c.id + '\',\'' + nombre + '\')">' +
+    '<div class="carpeta-icon">📁</div>' +
+    '<div class="carpeta-name">' + c.name + '</div>' +
+    '</div>';
 }
-
-function renderCarpetas(carpetas, parentId, breadcrumb, nextToken) {
-  const grid = document.getElementById('grid');
-  grid.innerHTML = `<div class="grid-carpetas" id="c-inner">${carpetasHTML(carpetas, breadcrumb)}</div>`;
-  renderBtnMasCarpetas(parentId, breadcrumb, nextToken);
-}
-
-function carpetasHTML(arr, breadcrumb) {
-  return arr.map(c => {
-    const nb = (breadcrumb ? breadcrumb + ' › ' : '') + c.name;
-    const esc = nb.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
-    const idEsc = c.id.replace(/'/g,"\\'");
-    return `<div class="carpeta-card" onclick="entrarCarpeta('${idEsc}','${esc}')">
-      <div class="icon">📁</div>
-      <div class="name">${c.name}</div>
-    </div>`;
-  }).join('');
-}
-
-function renderBtnMasCarpetas(parentId, breadcrumb, token) {
-  const pag = document.getElementById('pag');
-  pag.innerHTML = '';
-  if(!token) return;
-  const btn = document.createElement('button');
-  btn.className = 'btn-mas';
-  btn.textContent = 'Ver más →';
-  btn.onclick = async () => {
-    btn.disabled = true; btn.textContent = '⏳';
-    const data = await api({ action:'list', parentId, type:'folders', pageToken: token });
-    const inner = document.getElementById('c-inner');
-    if(inner) inner.innerHTML += carpetasHTML(data.files || [], breadcrumb);
-    renderBtnMasCarpetas(parentId, breadcrumb, data.nextPageToken);
-  };
-  pag.appendChild(btn);
-}
-
-window.entrarCarpeta = async function(folderId, breadcrumb) {
-  // Guardar estado anterior en historial
-  historial.push({ folderId: carpetaId, breadcrumb: document.getElementById('breadcrumb').dataset.texto || '' });
-  setBreadcrumb(breadcrumb, false);
-  await mostrarContenido(folderId, breadcrumb);
-};
-
-window.volverAtras = async function() {
-  if(!historial.length) return;
-  const prev = historial.pop();
-  if(!prev.folderId) {
-    // Volver a selección inicial
-    setBreadcrumb('');
-    setEstado('Selecciona una categoría para explorar.');
-    carpetaId = null;
-    return;
-  }
-  setBreadcrumb(prev.breadcrumb, false);
-  await mostrarContenido(prev.folderId, prev.breadcrumb);
-};
-
-async function mostrarImgs(folderId, pageToken) {
-  const data = await api({ action:'list', parentId: folderId, type:'images', pageToken: pageToken || '' });
-  const imgs = data.files || [];
-
-  if(!imgs.length && !pageToken) {
-    setEstado('No hay imágenes en esta carpeta.');
-    return;
-  }
-
-  ocultarEstado();
-  if(!pageToken) visorImgs = [];
-  visorImgs = visorImgs.concat(imgs);
-
-  const grid = document.getElementById('grid');
-  const cards = imgs.map((img, i) => {
-    const idx = visorImgs.length - imgs.length + i;
-    return imgCard(img, idx);
-  }).join('');
-
-  if(pageToken) {
-    const gi = grid.querySelector('.grid-imgs');
-    if(gi) gi.innerHTML += cards;
-  } else {
-    grid.innerHTML = `<div class="grid-imgs">${cards}</div>`;
-  }
-
-  const pag = document.getElementById('pag');
-  pag.innerHTML = '';
-  if(data.nextPageToken) {
-    const btn = document.createElement('button');
-    btn.className = 'btn-mas';
-    btn.textContent = 'Ver más imágenes →';
-    btn.onclick = () => mostrarImgs(folderId, data.nextPageToken);
-    pag.appendChild(btn);
-  }
-}
-
-// ── BÚSQUEDA ───────────────────────────────────────────────
 
 function imgCard(img, idx) {
   const nombre = img.name.replace(/\.\w+$/, '');
-  const div = document.createElement('div');
-  div.className = 'img-card';
-  const im = document.createElement('img');
-  im.src = img.thumbnailLink;
-  im.alt = nombre;
-  im.loading = 'lazy';
-  im.style.cursor = 'pointer';
-  im.onerror = function(){ this.style.opacity='0'; };
-  im.onclick = function(){ abrirVisor(idx); };
-  const dn = document.createElement('div');
-  dn.className = 'img-name';
-  dn.textContent = nombre;
-  const btn = document.createElement('button');
-  btn.textContent = '🛒 Pedir esta';
-  btn.style.cssText = 'width:calc(100% - 16px);margin:0 8px 8px;background:var(--verde);color:#fff;border:none;border-radius:8px;padding:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;';
-  btn.onclick = function(){ pedirPlayera(nombre); };
-  div.appendChild(im); div.appendChild(dn); div.appendChild(btn);
-  return div.outerHTML;
+  return '<div class="img-card">' +
+    '<img src="' + img.thumbnailLink + '" alt="' + nombre + '" loading="lazy" onclick="abrirVisor(' + idx + ')">' +
+    '<div class="img-nombre">' + nombre + '</div>' +
+    '<button class="btn-pedir" onclick="abrirPedir(\'' + img.id + '\',\'' + nombre.replace(/'/g,"\\'") + '\')">🛒 Pedir esta</button>' +
+    '</div>';
 }
 
-window.buscar = async function() {
-  const q = document.getElementById('q-input').value.trim();
-  if(!q) return;
+function entrarCarpeta(folderId, nombre) {
+  historial.push({ id: carpetaActual, texto: document.getElementById('bc-texto').textContent });
+  const textoActual = document.getElementById('bc-texto').textContent;
+  setBreadcrumb(textoActual ? textoActual + ' › ' + nombre : nombre);
+  cargarContenido(folderId);
+}
 
-  setEstado('⏳ Buscando...');
-  visorImgs = [];
-  document.getElementById('pag').innerHTML = '';
-
-  try {
-    const parentId = carpetaId || ROOT;
-    const data = await api({ action:'search', q, parentId, rootId: ROOT });
-
-    if(!data || data.tipo === 'nada') {
-      setEstado(`No se encontraron resultados para "${q}".`);
-      return;
-    }
-
-    if(data.tipo === 'carpeta') {
-      const c = data.resultado;
-      historial.push({ folderId: carpetaId, breadcrumb: document.getElementById('breadcrumb').dataset.texto || '' });
-      await mostrarContenido(c.id, c.name);
-      return;
-    }
-
-    if(data.tipo === 'archivos') {
-      visorImgs = data.resultado;
-      ocultarEstado();
-      setBreadcrumb(`Resultados: "${q}"`);
-      visorImgs = data.resultado;
-      document.getElementById('grid').innerHTML = `<div class="grid-imgs">${
-        data.resultado.map((img, i) => imgCard(img, i)).join('')
-      }</div>`;
-    }
-  } catch(e) {
-    setEstado('❌ Error al buscar.');
-    console.error(e);
+function volverAtras() {
+  if (!historial.length) return;
+  const prev = historial.pop();
+  setBreadcrumb(prev.texto);
+  if (prev.id) {
+    cargarContenido(prev.id);
+  } else {
+    mostrarEstado('Selecciona una categoría para explorar.');
+    ocultarBreadcrumb();
   }
-};
+}
 
-// ── BREADCRUMB ─────────────────────────────────────────────
-function setBreadcrumb(texto, esRaiz = false) {
-  const el = document.getElementById('breadcrumb');
-  el.dataset.texto = texto;
-  if(!texto) { el.style.display = 'none'; historial = []; return; }
-  el.style.display = 'flex';
-  const botonVolver = !esRaiz && historial.length > 0
-    ? `<button onclick="volverAtras()" style="background:none;border:1.5px solid var(--border);border-radius:20px;padding:4px 12px;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;color:var(--soft);margin-right:4px;">← Volver</button>`
-    : '';
-  el.innerHTML = `${botonVolver}<span style="color:var(--text);font-weight:600;">${texto}</span>`;
+// ── PAGINACIÓN ─────────────────────────────────────────────
+function masCarpetas() {
+  if (!tokenCarpetas) return;
+  api({ action: 'list', parentId: carpetaActual, type: 'folders', pageToken: tokenCarpetas })
+    .then(data => {
+      const gc = document.getElementById('grid-carpetas');
+      (data.files || []).forEach(c => {
+        gc.innerHTML += carpetaCard(c, carpetaActual);
+      });
+      tokenCarpetas = data.nextPageToken || null;
+      document.getElementById('btn-mas-carpetas').style.display = tokenCarpetas ? 'block' : 'none';
+    });
+}
+
+function masImgs() {
+  if (!tokenImgs) return;
+  api({ action: 'list', parentId: carpetaActual, type: 'images', pageToken: tokenImgs })
+    .then(data => {
+      const startIdx = visorImgs.length;
+      visorImgs = visorImgs.concat(data.files || []);
+      const gi = document.getElementById('grid-imgs');
+      (data.files || []).forEach((img, i) => {
+        gi.innerHTML += imgCard(img, startIdx + i);
+      });
+      tokenImgs = data.nextPageToken || null;
+      document.getElementById('btn-mas-imgs').style.display = tokenImgs ? 'block' : 'none';
+    });
+}
+
+// ── BÚSQUEDA ───────────────────────────────────────────────
+function buscar() {
+  const q = document.getElementById('inp-buscar').value.trim();
+  if (!q) return;
+
+  mostrarEstado('⏳ Buscando...');
+  visorImgs = [];
+
+  api({ action: 'search', q: q, parentId: carpetaActual || ROOT, rootId: ROOT })
+    .then(data => {
+      if (!data || data.tipo === 'nada') {
+        mostrarEstado('No se encontraron resultados para "' + q + '".');
+        return;
+      }
+      if (data.tipo === 'carpeta') {
+        const c = data.resultado;
+        historial.push({ id: carpetaActual, texto: document.getElementById('bc-texto').textContent });
+        setBreadcrumb(c.name);
+        cargarContenido(c.id);
+        return;
+      }
+      if (data.tipo === 'archivos') {
+        visorImgs = data.resultado;
+        ocultarEstado();
+        setBreadcrumb('Resultados: "' + q + '"');
+        const gi = document.getElementById('grid-imgs');
+        gi.style.display = 'grid';
+        gi.innerHTML = data.resultado.map((img, i) => imgCard(img, i)).join('');
+        document.getElementById('grid-carpetas').style.display = 'none';
+        document.getElementById('btn-mas-carpetas').style.display = 'none';
+        document.getElementById('btn-mas-imgs').style.display = 'none';
+      }
+    })
+    .catch(() => mostrarEstado('❌ Error al buscar.'));
+}
+
+// ── VISOR ──────────────────────────────────────────────────
+function abrirVisor(idx) {
+  visorIdx = idx;
+  document.getElementById('visor').classList.add('abierto');
+  renderVisor();
+  document.onkeydown = function(e) {
+    if (e.key === 'ArrowRight') navVisor(1);
+    if (e.key === 'ArrowLeft')  navVisor(-1);
+    if (e.key === 'Escape')     cerrarVisor();
+  };
+}
+
+function cerrarVisor() {
+  document.getElementById('visor').classList.remove('abierto');
+  document.onkeydown = null;
+}
+
+function navVisor(d) {
+  visorIdx = (visorIdx + d + visorImgs.length) % visorImgs.length;
+  renderVisor();
+}
+
+function renderVisor() {
+  const img = visorImgs[visorIdx];
+  if (!img) return;
+  document.getElementById('visor-img').src = 'https://drive.google.com/thumbnail?id=' + img.id + '&sz=w1200';
+  document.getElementById('visor-info').textContent = img.name.replace(/\.\w+$/, '');
+  document.getElementById('visor-count').textContent = (visorIdx + 1) + ' / ' + visorImgs.length;
+}
+
+// ── PEDIR ──────────────────────────────────────────────────
+function abrirPedir(imgId, nombre) {
+  pedidoActual = { id: imgId, nombre: nombre };
+  document.getElementById('mp-nombre-diseno').textContent = '📌 Diseño: ' + nombre;
+  document.getElementById('mp-nombre').value = '';
+  document.getElementById('mp-tel').value = '';
+  document.getElementById('mp-notas').value = '';
+  document.getElementById('modal-pedir').classList.add('abierto');
+}
+
+function confirmarPedido() {
+  const nombre = document.getElementById('mp-nombre').value.trim();
+  const tel    = document.getElementById('mp-tel').value.trim().replace(/\D/g,'');
+  const notas  = document.getElementById('mp-notas').value.trim();
+  if (!pedidoActual) return;
+
+  let msg = 'Hola! Vi este diseño en el catálogo de Playeras Beloma y me interesa 👕\n\n';
+  msg += '*Diseño:* ' + pedidoActual.nombre + '\n';
+  if (nombre) msg += '*Nombre:* ' + nombre + '\n';
+  if (notas)  msg += '*Nota:* ' + notas + '\n';
+  msg += '\n¿Me pueden dar información sobre precio, tallas y colores disponibles? ¡Gracias!';
+
+  const dest = tel.length === 10 ? '52' + tel : WS;
+  window.open('https://wa.me/' + dest + '?text=' + encodeURIComponent(msg), '_blank');
+  cerrarOverlay('modal-pedir');
+
+  // Agregar al carrito
+  carrito.push({ id: Date.now().toString(), nombre: pedidoActual.nombre, imgId: pedidoActual.id, notas: notas });
+  actualizarBadge();
+}
+
+// ── CARRITO ────────────────────────────────────────────────
+function actualizarBadge() {
+  document.getElementById('badge').textContent = carrito.length;
+}
+
+function verCarrito() {
+  const items  = document.getElementById('c-items');
+  const empty  = document.getElementById('c-empty');
+  const footer = document.getElementById('c-footer');
+  if (!carrito.length) {
+    items.innerHTML = '';
+    empty.style.display = 'block';
+    footer.style.display = 'none';
+  } else {
+    empty.style.display = 'none';
+    footer.style.display = 'block';
+    items.innerHTML = carrito.map(i =>
+      '<div class="c-item">' +
+      '<img src="https://drive.google.com/thumbnail?id=' + i.imgId + '&sz=w100" onerror="this.style.opacity=0">' +
+      '<div class="c-item-info"><div class="c-item-nombre">' + i.nombre + '</div>' +
+      (i.notas ? '<div class="c-item-det">' + i.notas + '</div>' : '') + '</div>' +
+      '<button onclick="quitarItem(\'' + i.id + '\')" style="background:none;border:none;color:#C0392B;cursor:pointer;font-size:18px;">🗑</button>' +
+      '</div>'
+    ).join('');
+  }
+  document.getElementById('carrito').classList.add('abierto');
+}
+
+function quitarItem(id) {
+  carrito = carrito.filter(i => i.id !== id);
+  actualizarBadge();
+  verCarrito();
+}
+
+function vaciarCarrito() {
+  if (!confirm('¿Vaciar el pedido?')) return;
+  carrito = [];
+  actualizarBadge();
+  verCarrito();
+}
+
+function enviarCarrito() {
+  if (!carrito.length) return;
+  let msg = 'Hola! Quisiera información sobre estos diseños de Playeras Beloma 👕\n\n';
+  carrito.forEach((i, n) => {
+    msg += (n + 1) + '. *' + i.nombre + '*\n';
+    if (i.notas) msg += '   Nota: ' + i.notas + '\n';
+  });
+  msg += '\n¿Pueden cotizarme precio, tallas y colores? ¡Gracias!';
+  window.open('https://wa.me/' + WS + '?text=' + encodeURIComponent(msg), '_blank');
 }
 
 // ── UTILIDADES ─────────────────────────────────────────────
-function setEstado(msg) {
+function mostrarEstado(msg) {
   document.getElementById('estado').textContent = msg;
   document.getElementById('estado').style.display = 'block';
-  document.getElementById('grid').innerHTML = '';
-  document.getElementById('pag').innerHTML = '';
+  document.getElementById('grid-carpetas').style.display = 'none';
+  document.getElementById('grid-imgs').style.display = 'none';
+  document.getElementById('btn-mas-carpetas').style.display = 'none';
+  document.getElementById('btn-mas-imgs').style.display = 'none';
+  document.getElementById('grid-carpetas').innerHTML = '';
+  document.getElementById('grid-imgs').innerHTML = '';
 }
+
 function ocultarEstado() {
   document.getElementById('estado').style.display = 'none';
 }
 
-// ── VISOR ──────────────────────────────────────────────────
-window.abrirVisor = function(idx) {
-  visorIdx = idx;
-  document.getElementById('visor').classList.add('open');
-  actualizarVisor();
-  document.onkeydown = e => {
-    if(e.key==='ArrowRight') visorNav(1);
-    if(e.key==='ArrowLeft')  visorNav(-1);
-    if(e.key==='Escape')     cerrarVisor();
-  };
-};
-window.cerrarVisor = function() {
-  document.getElementById('visor').classList.remove('open');
-  document.onkeydown = null;
-};
-window.visorNav = function(d) {
-  visorIdx = (visorIdx + d + visorImgs.length) % visorImgs.length;
-  actualizarVisor();
-};
-function actualizarVisor() {
-  const img = visorImgs[visorIdx];
-  if(!img) return;
-  document.getElementById('visor-img').src = `https://drive.google.com/thumbnail?id=${img.id}&sz=w1200`;
-  document.getElementById('visor-info').textContent = img.name;
-  document.getElementById('visor-count').textContent = `${visorIdx+1} / ${visorImgs.length}`;
+function setBreadcrumb(texto) {
+  document.getElementById('breadcrumb').style.display = 'flex';
+  document.getElementById('bc-texto').textContent = texto;
 }
 
-// ── PEDIDO ─────────────────────────────────────────────────
-window.abrirPedido = function(img) {
-  imgActual = img;
-  colorSel=''; generoSel=''; tallaSel=''; cantSel=1;
-  document.getElementById('mp-img').innerHTML = `<img src="https://drive.google.com/thumbnail?id=${img.id}&sz=w600" style="width:100%;aspect-ratio:1;object-fit:cover;">`;
-  document.getElementById('mp-nombre').textContent = img.name.replace(/\.\w+$/,'');
-  document.getElementById('mp-cant').textContent = '1';
-  document.getElementById('mp-nombre-cliente').value = '';
-  document.getElementById('mp-notas').value = '';
-  const colores = ['Blanca','Negra','Gris','Marino','Royal','Rojo','Verde','Naranja','Canario'];
-  document.getElementById('mp-colores').innerHTML = colores.map(c=>`<button class="opt" onclick="selOpt(this,'color','${c}')">${c}</button>`).join('');
-  document.getElementById('mp-generos').innerHTML = Object.keys(TALLAS).map(g=>`<button class="opt" onclick="selOpt(this,'genero','${g}')">${g}</button>`).join('');
-  document.getElementById('mp-tallas').innerHTML = '<span style="font-size:13px;color:var(--soft);">Elige un género</span>';
-  document.getElementById('modal-pedido').classList.add('open');
-};
-window.selOpt = function(btn, tipo, val) {
-  if(tipo==='color') { colorSel=val; document.querySelectorAll('#mp-colores .opt').forEach(b=>b.classList.remove('active')); }
-  if(tipo==='genero') {
-    generoSel=val; tallaSel='';
-    document.querySelectorAll('#mp-generos .opt').forEach(b=>b.classList.remove('active'));
-    document.getElementById('mp-tallas').innerHTML = (TALLAS[val]||[]).map(t=>`<button class="opt" onclick="selOpt(this,'talla','${t}')">${t}</button>`).join('');
-  }
-  if(tipo==='talla') { tallaSel=val; document.querySelectorAll('#mp-tallas .opt').forEach(b=>b.classList.remove('active')); }
-  btn.classList.add('active');
-};
-window.cambiarCant = function(d) { cantSel=Math.max(1,cantSel+d); document.getElementById('mp-cant').textContent=cantSel; };
-window.agregarAlCarrito = function() {
-  if(!colorSel) { alert('Selecciona el color'); return; }
-  if(!generoSel) { alert('Selecciona el género'); return; }
-  if(!tallaSel) { alert('Selecciona la talla'); return; }
-  carrito.push({ id:imgActual.id, nombre:imgActual.name.replace(/\.\w+$/,''),
-    img:`https://drive.google.com/thumbnail?id=${imgActual.id}&sz=w200`,
-    color:colorSel, genero:generoSel, talla:tallaSel, cant:cantSel,
-    notas:document.getElementById('mp-notas').value,
-    uid:Date.now().toString() });
-  actualizarBadge();
-  cerrarOverlay('modal-pedido');
-  const t=document.createElement('div');
-  t.textContent='✅ Agregado al pedido';
-  t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1A1A1A;color:#fff;padding:10px 20px;border-radius:20px;font-size:14px;z-index:9999;';
-  document.body.appendChild(t); setTimeout(()=>t.remove(),2000);
-};
+function ocultarBreadcrumb() {
+  document.getElementById('breadcrumb').style.display = 'none';
+  document.getElementById('bc-texto').textContent = '';
+}
 
-// ── CARRITO ────────────────────────────────────────────────
-function actualizarBadge() { document.getElementById('c-count').textContent=carrito.reduce((s,i)=>s+i.cant,0); }
-window.abrirCarrito = function() {
-  const items=document.getElementById('c-items'), empty=document.getElementById('c-empty'), footer=document.getElementById('c-footer');
-  if(!carrito.length) { items.innerHTML=''; empty.style.display='block'; footer.style.display='none'; }
-  else {
-    empty.style.display='none'; footer.style.display='block';
-    items.innerHTML=carrito.map(i=>`<div class="c-item">
-      <img src="${i.img}" onerror="this.style.opacity='0'">
-      <div style="flex:1;"><div style="font-weight:600;font-size:14px;">${i.nombre}</div>
-      <div style="font-size:12px;color:var(--soft);">${i.color} · ${i.genero} · ${i.talla} · x${i.cant}</div></div>
-      <button onclick="eliminarItem('${i.uid}')" style="background:none;border:none;color:#C0392B;cursor:pointer;font-size:18px;">🗑</button>
-    </div>`).join('');
-  }
-  document.getElementById('carrito').classList.add('open');
-};
-window.eliminarItem = function(uid) { carrito=carrito.filter(i=>i.uid!==uid); actualizarBadge(); abrirCarrito(); };
-window.vaciarCarrito = function() { if(!confirm('¿Vaciar?')) return; carrito=[]; actualizarBadge(); abrirCarrito(); };
-window.enviarWs = function() {
-  if(!carrito.length) return;
-  const nombre = document.getElementById('mp-nombre-cliente')?.value || '';
-  let msg=`Hola! Quisiera hacer un pedido 👕\n`;
-  if(nombre) msg+=`*Cliente:* ${nombre}\n`;
-  msg+=`\n*MI PEDIDO:*\n`;
-  carrito.forEach((i,n)=>{
-    msg+=`\n${n+1}. *${i.nombre}*\n   🎨 ${i.color} · 👤 ${i.genero} · 📏 ${i.talla} · x${i.cant}\n`;
-    if(i.notas) msg+=`   📝 ${i.notas}\n`;
+function cerrarOverlay(id) {
+  document.getElementById(id).classList.remove('abierto');
+}
+
+document.querySelectorAll('.overlay,.c-overlay').forEach(o => {
+  o.addEventListener('click', function(e) {
+    if (e.target === o) o.classList.remove('abierto');
   });
-  msg+=`\n¿Pueden confirmar disponibilidad? ¡Gracias!`;
-  window.open(`https://wa.me/${WS}?text=${encodeURIComponent(msg)}`,'_blank');
-};
-
-window.pedirPlayera = function(nombre) {
-  const msg = `Hola! Vi este diseño en el catálogo de Playeras Beloma y me interesa pedirlo 👕\n\n*Diseño:* ${nombre}\n\n¿Me pueden dar información sobre precio, tallas y colores disponibles? ¡Gracias!`;
-  window.open(`https://wa.me/${WS}?text=${encodeURIComponent(msg)}`, '_blank');
-};
-
-window.cerrarOverlay = function(id) { document.getElementById(id).classList.remove('open'); };
-document.querySelectorAll('.overlay,.c-overlay').forEach(o=>o.addEventListener('click',e=>{ if(e.target===o) o.classList.remove('open'); }));
+});
 </script>
 </body>
 </html>
