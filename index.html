@@ -482,6 +482,10 @@ function enviarCarrito() {
   });
   msg += '\n¿Pueden cotizarme precio, tallas y colores? ¡Gracias!';
   window.open('https://wa.me/' + WS + '?text=' + encodeURIComponent(msg), '_blank');
+  // Limpiar carrito después de enviar
+  carrito = [];
+  actualizarBadge();
+  cerrarOverlay('carrito');
 }
 
 // ── UTILIDADES ─────────────────────────────────────────────
