@@ -115,6 +115,10 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--dark);}
   <button class="cat-btn" data-cat="Series" onclick="selCat(this)">Series</button>
   <button class="cat-btn" data-cat="Superheroes" onclick="selCat(this)">Superhéroes</button>
   <button class="cat-btn" data-cat="Videojuegos" onclick="selCat(this)">Videojuegos</button>
+  <button class="cat-btn" data-cat="Disney" onclick="selCat(this)">Disney</button>
+  <button class="cat-btn" data-cat="Futbol" onclick="selCat(this)">Fútbol</button>
+  <button class="cat-btn" data-cat="Dias Festivos" onclick="selCat(this)">Días Festivos</button>
+  <button class="cat-btn" data-cat="Peliculas Terror" onclick="selCat(this)">Películas Terror</button>
 </div>
 
 <div class="breadcrumb" id="breadcrumb">
@@ -171,8 +175,36 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--dark);}
 </div>
 
 <script>
-// ── CONFIGURACIÓN ──────────────────────────────────────────
-const WORKER = 'https://hidden-fire-32cb.fcristerna1.workers.dev';
+const API_KEY = 'AIzaSyDQCuGlCxr5fh23vkE0Ysx42ORNB8-9GV4';
+const CATS_IDS = [
+  '1ePVx5-rVtxUS7VTviIUoDRTvu61MP2WV',
+  '1y6i76vSXU-5TNXEELI1EAovdC0DwNMtD',
+  '1cRzqszOoazTcHdnXnDiBFmT2tHsG--es',
+  '1VFoKphgF_EneAjItuysXyD-iS5jJy4Ts',
+  '1b6Bxza_WC7FOdJMxEd1hCNSCAFFL4VKD',
+  '1t0jhftz1iV-m1r9q8UvxSiNL-V41ztvc',
+  '1SUR692hrQZw0VN2CY_cWuODS9P5VG_pq',
+  '1SdmS1JcwMIO_LW2Z9Qf6luS03G7HDoYP',
+  '1hF7InUNSRtEPljdT4_lhZ-m2Uq85qc-W',
+  '1DHhyozMiAaTabGx2bUDl31bePcpyn3lb',
+  '1tUSunq78uJy9JA_IAihw5tb74naFnjHG',
+  '1IMb_O58qyc9R-zejiS1qp9L2Jvo8uF9E',
+  '1TpZzmLOsiZW-PpFX6pLwzOfJSfMHRoer',
+  '1BVqFoDLCgakKLTxPA6zjjpbe3Rsngj2C',
+  '1VEcD4tckFzKDF0JlVq7QcvfaKfzkFfOC',
+  '1ZpQrOZ8cVbBy2sh0L9giccYKKJ7SU2RS',
+  '1mlNWebmeK5V2UVkb_o0_GgbbxpD5ETTn',
+];
+
+async function driveDirecto(parentId, q, tipo) {
+  const mime = tipo === 'folder'
+    ? `mimeType='application/vnd.google-apps.folder'`
+    : `mimeType contains 'image/'`;
+  const url = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(`'${parentId}' in parents and ${mime} and name contains '${q}' and trashed=false`)}&fields=files(id,name,thumbnailLink)&pageSize=10&key=${API_KEY}`;
+  const res = await fetch(url);
+  const data = await res.json();
+  return data.files || [];
+}
 const ROOT   = '1N7efR6KLBl0OvS_EXCWsVg0NhW62OKbs';
 const WS     = '526691549680';
 
@@ -336,37 +368,56 @@ function masImgs() {
 }
 
 // ── BÚSQUEDA ───────────────────────────────────────────────
+function variantes(q) {
+  const b = q.trim();
+  return [...new Set([b, b.toLowerCase(), b.charAt(0).toUpperCase() + b.slice(1).toLowerCase(), b.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase()])];
+}
+
+async function buscarNivel2(v) {
+  // Obtener subcarpetas de cada categoría y buscar en ellas
+  for (const catId of CATS_IDS) {
+    const url = 'https://www.googleapis.com/drive/v3/files?q=' + encodeURIComponent("'" + catId + "' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false") + '&fields=files(id,name)&pageSize=50&key=' + API_KEY;
+    const res = await fetch(url);
+    const data = await res.json();
+    const subs = data.files || [];
+    for (const sub of subs) {
+      const found = await driveDirecto(sub.id, v, 'folder');
+      if (found.length) return found[0];
+    }
+  }
+  return null;
+}
+
 function buscar() {
   const q = document.getElementById('inp-buscar').value.trim();
   if (!q) return;
-
   mostrarEstado('⏳ Buscando...');
   visorImgs = [];
 
-  api({ action: 'search', q: q, parentId: carpetaActual || ROOT, rootId: ROOT })
-    .then(data => {
-      if (!data || data.tipo === 'nada') {
+  api({ action: 'search', q: q })
+    .then(async data => {
+      if (data.tipo === 'carpeta') {
+        historial.push({ id: carpetaActual, texto: document.getElementById('bc-texto').textContent });
+        setBreadcrumb(data.resultado.name);
+        cargarContenido(data.resultado.id);
+        return;
+      }
+      if (data.tipo === 'nivel2') {
+        mostrarEstado('⏳ Buscando en subcarpetas...');
+        const vs = variantes(q);
+        for (const v of vs) {
+          const found = await buscarNivel2(v);
+          if (found) {
+            historial.push({ id: carpetaActual, texto: document.getElementById('bc-texto').textContent });
+            setBreadcrumb(found.name);
+            cargarContenido(found.id);
+            return;
+          }
+        }
         mostrarEstado('No se encontraron resultados para "' + q + '".');
         return;
       }
-      if (data.tipo === 'carpeta') {
-        const c = data.resultado;
-        historial.push({ id: carpetaActual, texto: document.getElementById('bc-texto').textContent });
-        setBreadcrumb(c.name);
-        cargarContenido(c.id);
-        return;
-      }
-      if (data.tipo === 'archivos') {
-        visorImgs = data.resultado;
-        ocultarEstado();
-        setBreadcrumb('Resultados: "' + q + '"');
-        const gi = document.getElementById('grid-imgs');
-        gi.style.display = 'grid';
-        gi.innerHTML = data.resultado.map((img, i) => imgCard(img, i)).join('');
-        document.getElementById('grid-carpetas').style.display = 'none';
-        document.getElementById('btn-mas-carpetas').style.display = 'none';
-        document.getElementById('btn-mas-imgs').style.display = 'none';
-      }
+      mostrarEstado('No se encontraron resultados para "' + q + '".');
     })
     .catch(() => mostrarEstado('❌ Error al buscar.'));
 }
