@@ -226,7 +226,27 @@ async function api(params) {
   return res.json();
 }
 
-// ── NAVEGACIÓN ─────────────────────────────────────────────
+// Mapa de nombre de categoría a ID de Drive
+const CAT_IDS = {
+  'Anime':                    '1ePVx5-rVtxUS7VTviIUoDRTvu61MP2WV',
+  'Caricaturas Actuales':     '1y6i76vSXU-5TNXEELI1EAovdC0DwNMtD',
+  'Caricaturas Retro':        '1cRzqszOoazTcHdnXnDiBFmT2tHsG--es',
+  'Deportes':                 '1VFoKphgF_EneAjItuysXyD-iS5jJy4Ts',
+  'Diseños':                  '1b6Bxza_WC7FOdJMxEd1hCNSCAFFL4VKD',
+  'Grupos Musicales':         '1t0jhftz1iV-m1r9q8UvxSiNL-V41ztvc',
+  'Juguetes & Juegos':        '1SUR692hrQZw0VN2CY_cWuODS9P5VG_pq',
+  'Libros, Revistas y Cómics':'1SdmS1JcwMIO_LW2Z9Qf6luS03G7HDoYP',
+  'Peliculas':                '1hF7InUNSRtEPljdT4_lhZ-m2Uq85qc-W',
+  'Personajes':               '1DHhyozMiAaTabGx2bUDl31bePcpyn3lb',
+  'Series':                   '1tUSunq78uJy9JA_IAihw5tb74naFnjHG',
+  'Superheroes':              '1IMb_O58qyc9R-zejiS1qp9L2Jvo8uF9E',
+  'Videojuegos':              '1TpZzmLOsiZW-PpFX6pLwzOfJSfMHRoer',
+  'Disney':                   '1BVqFoDLCgakKLTxPA6zjjpbe3Rsngj2C',
+  'Futbol':                   '1VEcD4tckFzKDF0JlVq7QcvfaKfzkFfOC',
+  'Dias Festivos':            '1ZpQrOZ8cVbBy2sh0L9giccYKKJ7SU2RS',
+  'Peliculas Terror':         '1mlNWebmeK5V2UVkb_o0_GgbbxpD5ETTn',
+};
+
 function selCat(btn) {
   document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('activo'));
   btn.classList.add('activo');
@@ -240,18 +260,11 @@ function selCat(btn) {
     return;
   }
 
-  mostrarEstado('⏳ Cargando...');
-  api({ action: 'list', parentId: ROOT, type: 'folders', q: cat })
-    .then(data => {
-      const folder = (data.files || []).find(f =>
-        f.name.toLowerCase().includes(cat.toLowerCase())
-      ) || data.files?.[0];
-      if (!folder) { mostrarEstado('No se encontró la categoría.'); return; }
-      carpetaActual = folder.id;
-      setBreadcrumb(cat);
-      cargarContenido(folder.id);
-    })
-    .catch(() => mostrarEstado('❌ Error al conectar.'));
+  const folderId = CAT_IDS[cat];
+  if (!folderId) { mostrarEstado('No se encontró la categoría.'); return; }
+  carpetaActual = folderId;
+  setBreadcrumb(cat);
+  cargarContenido(folderId);
 }
 
 function cargarContenido(folderId) {
