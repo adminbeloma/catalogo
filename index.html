@@ -387,19 +387,25 @@ function variantes(q) {
   return [...new Set([b, b.toLowerCase(), b.charAt(0).toUpperCase() + b.slice(1).toLowerCase(), b.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase()])];
 }
 
-async function buscarNivel2(v) {
-  // Obtener subcarpetas de cada categoría y buscar en ellas
-  for (const catId of CATS_IDS) {
-    const url = 'https://www.googleapis.com/drive/v3/files?q=' + encodeURIComponent("'" + catId + "' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false") + '&fields=files(id,name)&pageSize=50&key=' + API_KEY;
-    const res = await fetch(url);
-    const data = await res.json();
-    const subs = data.files || [];
-    for (const sub of subs) {
-      const found = await driveDirecto(sub.id, v, 'folder');
-      if (found.length) return found[0];
-    }
-  }
-  return null;
+// Busca TODAS las imágenes de una carpeta en Drive (paginando) y filtra por nombre
+async function buscarEnCarpetaActual(q) {
+  if (!carpetaActual) return [];
+  mostrarEstado('⏳ Buscando "' + q + '" en esta carpeta...');
+  const qLow = q.toLowerCase();
+  let token = null;
+  let encontradas = [];
+  do {
+    const params = { action: 'list', parentId: carpetaActual, type: 'images' };
+    if (token) params.pageToken = token;
+    const data = await api(params);
+    const imgs = data.files || [];
+    imgs.forEach(img => {
+      const nombre = (img.name || '').replace(/\.\w+$/, '');
+      if (nombre.toLowerCase().includes(qLow)) encontradas.push(img);
+    });
+    token = data.nextPageToken || null;
+  } while (token);
+  return encontradas;
 }
 
 function buscar() {
@@ -408,6 +414,30 @@ function buscar() {
   mostrarEstado('⏳ Buscando...');
   visorImgs = [];
 
+  // Si estamos dentro de una carpeta, busca en todas las páginas de esa carpeta
+  if (carpetaActual) {
+    buscarEnCarpetaActual(q).then(imgs => {
+      if (imgs.length === 0) {
+        mostrarEstado('No se encontró "' + q + '" en esta carpeta.');
+        return;
+      }
+      visorImgs = imgs;
+      ocultarEstado();
+      const gi = document.getElementById('grid-imgs');
+      gi.style.display = 'grid';
+      gi.innerHTML = imgs.map((img, i) => imgCard(img, i)).join('');
+      // Ocultar botones ver más durante búsqueda
+      document.getElementById('btn-mas-carpetas').style.display = 'none';
+      document.getElementById('btn-mas-imgs').style.display = 'none';
+      // Limpiar carpetas
+      const gc = document.getElementById('grid-carpetas');
+      gc.style.display = 'none';
+      gc.innerHTML = '';
+    }).catch(() => mostrarEstado('❌ Error al buscar.'));
+    return;
+  }
+
+  // Si no hay carpeta activa, búsqueda global (comportamiento original)
   api({ action: 'search', q: q })
     .then(async data => {
       if (data.tipo === 'carpeta') {
